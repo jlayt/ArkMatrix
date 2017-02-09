@@ -132,14 +132,14 @@ class Project():
     def orphans(self):
         units = []
         for unit in self._units.values():
-            if unit.unitId() not in self.matrix:
+            if unit not in self.matrix:
                 units.append(unit.unitId())
         return units
 
     def removeOrphans(self):
         units = []
         for unit in self._units.values():
-            if unit.unitId() not in self.matrix:
+            if unit not in self.matrix:
                 units.append(unit.key())
         for key in units:
             self._units.pop(key)
