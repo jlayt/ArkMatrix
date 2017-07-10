@@ -23,25 +23,7 @@
 
 import networkx as nx
 
-from unit import Unit
-
-# Create a key, if a Unit then use the internal key
-def _key(unit):
-    if isinstance(unit, Unit):
-        return unit.key()
-    return unit
-
-def _keys(units):
-    keys = []
-    for unit in units:
-        set.append(_key(unit))
-    return sorted(keys)
-
-def _sortedKeys(units):
-    keys = set()
-    for unit in units:
-        keys.add(_key(unit))
-    return sorted(keys)
+from harris.unit import Unit
 
 """
 A class to store, query, and manipulate a Harris Matrix.
@@ -70,30 +52,32 @@ class Matrix():
         self._contemp = nx.Graph()
 
     def __contains__(self, unit):
-        key = _key(unit)
-        return key in self._strat or key in self._same or key in self._contemp
+        return unit in self._strat or unit in self._same or unit in self._contemp
 
     def info(self):
-        info = '  Strat Units: ' + str(self._strat.number_of_nodes()) + '\n'
-        info = info + '  Strat Relationships: ' + str(self._strat.number_of_edges()) + '\n'
-        info = info + '  Same As Relationships: ' + str(self._same.number_of_edges()) + '\n'
-        info = info + '  Contemporary Relationships: ' + str(self._contemp.number_of_edges()) + '\n'
-        missing = self.missingPredessors()
-        info = info + '  Missing Predecessors: ' + str(len(missing)) + '\n'
-        if missing:
-            info = info + '      ' + str(sorted(missing)) + '\n'
-        missing = self.missingSuccessors()
-        info = info + '  Missing Successors: ' + str(len(missing)) + '\n'
-        if missing:
-            info = info + '      ' + str(sorted(missing)) + '\n'
-        info = info + '  Is Valid: ' + str(self.isValid()) + '\n'
-        if self.isValid():
-            info = info + '  Longest Path: ' + str(nx.dag_longest_path_length(self._strat)) + '\n'
+        info = {}
+        info['strat'] = {}
+        info['strat']['nodes'] = self._strat.number_of_nodes()
+        info['strat']['edges'] = self._strat.number_of_edges()
+        info['same'] = {}
+        info['same']['nodes'] = self._same.number_of_nodes()
+        info['same']['edges'] = self._same.number_of_edges()
+        info['contemp'] = {}
+        info['contemp']['nodes'] = self._contemp.number_of_nodes()
+        info['contemp']['edges'] = self._contemp.number_of_edges()
+        info['missing'] = {}
+        info['missing']['predecessors'] = self.missingPredessors()
+        info['missing']['successors'] = self.missingSuccessors()
+        info['valid'] = self.isValid()
+        if self.isValid() and len(self._strat) > 0:
+            info['longest'] = nx.dag_longest_path_length(self._strat)
+        else:
+            info['longest'] = []
         return info
 
     def isValid(self):
-        """Return True if this Matrix, i.e. a Directed Acyclic Graph"""
-        return nx.is_directed_acyclic_graph(self._strat)
+        """Return True if this Matrix is valid, i.e. a Directed Acyclic Graph"""
+        return self.count() == 0 or nx.is_directed_acyclic_graph(self._strat)
 
     def clear(self):
         """Clears the matrix"""
@@ -113,8 +97,6 @@ class Matrix():
 
         A unit may be any hashable type such as string, number, or hashable class.
         """
-        fromUnit = _key(fromUnit)
-        toUnit = _key(toUnit)
         if fromUnit == toUnit:
             return False
         if reln == Matrix.Above:
@@ -145,8 +127,6 @@ class Matrix():
 
         The destination group may be any iterable collection.
         """
-        fromUnit = _key(fromUnit)
-        toUnits = _sortedKeys(toUnits)
         if reln == Matrix.Above:
             toUnits.insert(0, fromUnit)
             self._strat.add_star(toUnits)
@@ -172,12 +152,15 @@ class Matrix():
 
     def addRelationshipChain(self, unitsChain):
         """Add a chain of Above/Below relationships in the order of the input list."""
-        self._strat.add_path(_keys(unitsChain))
+        self._strat.add_path(unitsChain)
+
+    def removeUnit(self, unit):
+        self._strat.remove_node(unit)
+        self._same.remove_node(unit)
+        self._contemp.remove_node(unit)
 
     def removeRelationship(self, fromUnit, reln, toUnit):
         """Remove a relationship from the Matrix if it exists."""
-        fromUnit = _key(fromUnit)
-        toUnit = _key(toUnit)
         if reln == Matrix.Above:
             try:
                 self._strat.remove_edge(fromUnit, toUnit)
@@ -206,8 +189,6 @@ class Matrix():
 
     def hasRelationship(self, fromUnit, reln, toUnit):
         """Return True if a relationship type exists between two units."""
-        fromUnit = _key(fromUnit)
-        toUnit = _key(toUnit)
         if reln == Matrix.Above:
             return self._strat.has_edge(fromUnit, toUnit)
         elif reln == Matrix.Below:
@@ -222,7 +203,6 @@ class Matrix():
         """Returns a list of all units with a relationship of a certain type to a unit."""
         if unit is None and reln is None:
             return self._strat.edges()
-        unit = _key(unit)
         if reln == Matrix.Above:
             return self._strat.predecessors(unit)
         elif reln == Matrix.Below:
@@ -234,46 +214,60 @@ class Matrix():
         return []
 
     def predecessors(self, unit):
-        """Returns a list of all units immediately above a given unit in the matrix"""
-        if _key(unit) in self._strat:
-            return self._strat.predecessors(_key(unit))
+        """Returns a list of all units *directly* above a given unit in the matrix"""
+        if unit in self._strat:
+            return self._strat.predecessors(unit)
         return []
 
     def successors(self, unit):
-        """Returns a list of all units immediately below a given unit in the matrix"""
-        if _key(unit) in self._strat:
-            return self._strat.successors(_key(unit))
+        """Returns a list of all units *directly* below a given unit in the matrix"""
+        if unit in self._strat:
+            return self._strat.successors(unit)
         return []
 
     def sameAs(self, unit):
         """Returns a list of all units the same as a given unit in the matrix"""
-        if _key(unit) in self._strat:
-            return self._same.neighbours(_key(unit))
+        if unit in self._strat:
+            return self._same.neighbours(unit)
         return []
 
     def contemporaryWith(self, unit):
         """Returns a list of all units contemporary with a given unit in the matrix"""
-        return self._contemp.neighbours(_key(unit))
+        return self._contemp.neighbours(unit)
 
     def ancestors(self, unit):
-        """Returns a list of all units above a given unit in the matrix"""
-        if _key(unit) in self._strat:
-            return nx.ancestors(self._strat, _key(unit))
+        """Returns a list of *all* units above a given unit in the matrix"""
+        if unit in self._strat:
+            return nx.ancestors(self._strat, unit)
         return []
 
     def descendents(self, unit):
-        """Returns a list of all units below a given unit in the matrix"""
-        if _key(unit) in self._strat:
-            return nx.descendents(self._strat, _key(unit))
+        """Returns a list of *all* units below a given unit in the matrix"""
+        if unit in self._strat:
+            return nx.descendents(self._strat, unit)
         return []
 
     def hasUnit(self, unit):
         """Returns True if the matrix contains the given unit."""
-        return self.__contains__(_key(unit))
+        return self.__contains__(unit)
 
     def cycles(self):
         """Returns a list of any cycles in the matrix."""
         return nx.simple_cycles(self._strat)
+
+    def reduceSameAs(self, project):
+        """Resolve all SameAs relationships."""
+        # foreach _same node, pick the lowest number
+        # foreach _same node, apply all relns to lowest number
+        subgraphs = nx.connected_components(self._same)
+        for subgraph in subgraphs:
+            subgraph = sorted(subgraph)
+            unit = subgraph.pop(0)
+            for sameAs in subgraph:
+                self.addRelationships(self, unit, self.Below, self.predecessors(sameAs))
+                self.addRelationships(self, unit, self.Above, self.descendents(sameAs))
+                self.addRelationships(self, unit, self.ContemporaryWith, self.contemporaryWith(sameAs))
+                project.removeUnit(sameAs)
 
     def reduce(self, remove=True):
         """Reduces a valid matrix by removing redundant edges. This transforms the matrix in place."""
@@ -316,8 +310,8 @@ class Matrix():
         return nodes
 
     def weight(self, fromUnit, toUnit):
-        if _key(fromUnit) in self._strat and _key(toUnit) in self._strat:
-            return self._strat[_key(fromUnit)][_key(toUnit)]['weight']
+        if fromUnit in self._strat and toUnit in self._strat:
+            return self._strat[fromUnit][toUnit]['weight']
 
     def weightForDegree(self):
         for edge in self._strat.edges_iter():

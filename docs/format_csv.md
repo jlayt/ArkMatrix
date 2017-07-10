@@ -16,15 +16,15 @@ Example:
 
 ## Tagged Relationship Format
 
-The tagged relationship format supports more features by allowing relationships to be tagged in a third column, i.e. the tag in column C defines the relationship between the Statagraphic Units in columns A and B.
+The tagged relationship format supports more features by allowing relationships to be tagged in a third column, i.e. the tag in column C defines the relationship between the Stratigraphic Units in columns A and B.
 
 File Metadata Tags:
 * site
 * dataset
 
 Unit Metadata Tags:
-* status = unassigned | assigned | void
-* class = unknown | deposit | fill | cut | masonry | skeleton | timber
+* status = allocated | assigned | void
+* type = undefined | deposit | fill | cut | masonry | skeleton | timber
 
 Relationship Tags:
 * above - unit in column A is above unit in column B
@@ -32,11 +32,12 @@ Relationship Tags:
 * sameas - unit in column A is same-as unit in column B
 * contemporary - unit in column A is contemporary-with unit in column B
 
-Grouping Tags:
+Aggregation Tags:
 * subgroup - unit in column A is a member of subgroup in column B
 * group - subgroup in column A is a member of group in column B
+* landuse - group in column A is a member of landuse in column B
 
-All Metadata and Grouping tags are optional. Tags may be included in any order, except the 'site' and 'dataset' tags which if defined should be listed first so they can be used when processing the following units. It is recommened that the tags be written in the order listed above, i.e. File Metadata, Unit Metadata, Relationship, Grouping.
+All Metadata and Aggregation tags are optional. Tags may be included in any order, except the 'site' and 'dataset' tags which if defined should be listed first so they can be used when processing the following units. It is recommended that the tags be written in the order listed above, i.e. File Metadata, Unit Metadata, Relationship, Aggregation.
 
 Other tags may be included in the file, such as 'description' or 'location', but these will be ignored by ArkMatrix.
 
