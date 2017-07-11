@@ -199,10 +199,16 @@ class Matrix():
             return self._contemp.has_edge(fromUnit, toUnit)
         return False
 
-    def relationships(self, unit=None, reln=None):
-        """Returns a list of all units with a relationship of a certain type to a unit."""
-        if unit is None and reln is None:
-            return self._strat.edges()
+    def relationships(self, reln=None):
+        """Returns a list of all relationships of a certain type."""
+        if reln == Matrix.SameAs:
+            return self._same.edges_iter()
+        if reln == Matrix.ContemporaryWith:
+            return self._contemp.edges_iter()
+        return self._strat.edges_iter()
+
+    def related(self, unit, reln = None):
+        """Returns a list of all units related to a unit, optionally for a certain relationship type."""
         if reln == Matrix.Above:
             return self._strat.predecessors(unit)
         elif reln == Matrix.Below:
@@ -211,7 +217,7 @@ class Matrix():
             return self._same.neighbours(unit)
         elif reln == Matrix.ContemporaryWith:
             return self._contemp.neighbours(unit)
-        return []
+        return sorted(self._strat.successors(unit) + self._strat.predecessors(unit) + self._same.neighbours(unit) + self._contemp.neighbours(unit))
 
     def predecessors(self, unit):
         """Returns a list of all units *directly* above a given unit in the matrix"""

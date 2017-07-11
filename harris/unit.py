@@ -103,6 +103,9 @@ class Unit():
     def id(self):
         return self._id
 
+    def node(self):
+        return self._nid
+
     def setClass(self, unitClass):
         self._class = unitClass
 

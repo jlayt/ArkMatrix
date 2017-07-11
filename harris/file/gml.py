@@ -29,26 +29,28 @@ from harris.utilities import *
 
 class Gml():
 
-    def write(self, project, options):
+    def write(self, project, unitClass, options):
 
         self._writeHeader()
 
-        for unit in project.units():
-            if options['group']:
-                gid = unit.aggregate()._nid
+        for unit in project.units(unitClass):
+            if options['aggregate']:
+                gid = unit.aggregate().node()
             else:
                 gid = ''
 
-            self._writeNode(unit._nid, unit.unitId(), gid, options['style'], options['width'], options['height'])
+            self._writeNode(unit.node(), unit.id(), gid, options['style'], options['width'], options['height'])
 
         eid = 0
-        for edge in project.matrix._strat.edges_iter():
-            self._writeEdge(eid, project.unit(edge[0])._nid, project.unit(edge[1])._nid, options['style'])
+        for edge in project.matrix(Unit.Context).relationships():
+            frm = edge[0]
+            to = edge[1]
+            self._writeEdge(eid, edge[0].node(), edge[1].node(), options['style'])
             eid += 1
 
-        if options['group']:
-            for unit in project._subgroups:
-                self._writeAggregate(unit._nid, unit.unitId(), 'Subgroup')
+        if options['aggregate']:
+            for unit in project.units(Unit.Subgroup):
+                self._writeAggregate(unit.node(), unit.id(), 'Subgroup')
 
         self._writeFooter()
 
@@ -56,13 +58,17 @@ class Gml():
 
         self._writeHeader()
 
-        for subgroupId in project._subgroups.keys():
-            self._writeNode(self._hash(subgroupId), subgroupId, '', options['style'], options['width'], options['height'])
+        for subgroup in project.units(Unit.Subgroup).values():
+            self._writeNode(subgroup.node(), subgroup.id(), '', options['style'], options['width'], options['height'])
 
         eid = 0
-        for edge in project.subgroupMatrix._strat.edges_iter():
-            self._writeEdge(eid, self._hash(edge[0]), self._hash(edge[1]), options['style'])
+        for edge in project.matrix(Unit.Subgroup).relationships():
+            self._writeEdge(eid, edge[0].node(), edge[1].node(), options['style'])
             eid += 1
+
+        if options['aggregate']:
+            for unit in project.units(Unit.Group):
+                self._writeAggregate(unit.node(), unit.id(), 'Group')
 
         self._writeFooter()
 
@@ -70,18 +76,15 @@ class Gml():
 
         self._writeHeader()
 
-        for groupId in project._groups.keys():
-            self._writeNode(self._hash(groupId), groupId, '', options['style'], options['width'], options['height'])
+        for group in project.units(Unit.Group).values():
+            self._writeNode(group.node(), group.id(), '', options['style'], options['width'], options['height'])
 
         eid = 0
-        for edge in project.groupMatrix._strat.edges_iter():
-            self._writeEdge(eid, self._hash(edge[0]), self._hash(edge[1]), options['style'])
+        for edge in project.matrix(Unit.Group).relationships():
+            self._writeEdge(eid, edge[0].node(), edge[1].node(), options['style'])
             eid += 1
 
         self._writeFooter()
-
-    def _hash(self, value):
-        return zlib.adler32(value) & 0xffffffff
 
     def _writeHeader(self):
         print 'graph ['

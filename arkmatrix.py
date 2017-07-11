@@ -35,6 +35,7 @@ def parseArguments():
     parser.add_argument("-r", "--reduce", help="Apply a transitive reduction to the input graph", action='store_true')
     parser.add_argument("-a", "--aggregate", help="Generate aggregate Matrices", action='store_true')
     parser.add_argument("-s", "--style", help="Include basic style formatting in output", action='store_true')
+    parser.add_argument("--all", help="Apply full options to processing, i.e. reduce, aggregate, style", action='store_true')
     parser.add_argument("--site", help="Site Code for Matrix", default='')
     parser.add_argument("--name", help="Name for Matrix", default='')
     parser.add_argument("--sameas", help="Include Same-As relationships in output", action='store_true')
@@ -111,17 +112,20 @@ def process(infile, outfile, options):
         redundant = project.redundant()
         writeRelationships(redundant)
 
-    if outfile and options['output'] != 'none':
+    if outfile or options['output'] != 'none':
         old_stdout = sys.stdout
-        sys.stdout = outfile
-        formatter = Format.createFormat(suffix)
+        formatter = Format.createFormat(options['output'])
         for unitClass in range(Unit.Context, Unit.Landuse):
+            print Unit.Class[unitClass] + ' ' + str(project.matrix(unitClass).count())
             if project.matrix(unitClass).count() > 0:
+                print str(outfile)
                 if not outfile:
                     name = options['outpath'] + options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
+                    print name
                     outfile = open(name, 'w')
-                    sys.stdout = outfile
-                formatter.write(self, unitClass, options)
+                    print(outfile)
+                sys.stdout = outfile
+                formatter.write(project, unitClass, options)
             outfile.close()
         outfile.close()
         sys.stdout = old_stdout

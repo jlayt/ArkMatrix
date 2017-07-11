@@ -129,7 +129,7 @@ class Project():
     def unaggregated(self, unitClass):
         units = []
         for unit in self._units[unitClass].values():
-            if unit.aggregate() is not None:
+            if unit.aggregate() is None:
                 units.append(unit.aggregate())
         return sorted(units)
 
