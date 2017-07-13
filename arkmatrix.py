@@ -42,8 +42,8 @@ def parseArguments():
     parser.add_argument("--orphans", help="Include orphan units in output (format dependent)", action='store_true')
     parser.add_argument("--width", help="Width of node if --style is set", type=float, default=50.0)
     parser.add_argument("--height", help="Height of node if --style is set", type=float, default=25.0)
-    parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=sys.stdin)
-    parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=sys.stdout)
+    parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=None)
+    parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=None)
     return parser.parse_args()
 
 def options(args):
@@ -113,22 +113,23 @@ def process(infile, outfile, options):
         writeRelationships(redundant)
 
     if outfile or options['output'] != 'none':
-        old_stdout = sys.stdout
+        sys.stdout.write(options['outpath'] + '\n')
+        sys.stdout.write(options['outname'] + '\n')
+        sys.stdout.write(options['output'] + '\n')
         formatter = Format.createFormat(options['output'])
         for unitClass in range(Unit.Context, Unit.Landuse):
-            print Unit.Class[unitClass] + ' ' + str(project.matrix(unitClass).count())
             if project.matrix(unitClass).count() > 0:
-                print str(outfile)
                 if not outfile:
-                    name = options['outpath'] + options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
-                    print name
+                    name = options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
                     outfile = open(name, 'w')
-                    print(outfile)
                 sys.stdout = outfile
-                formatter.write(project, unitClass, options)
+                formatter.write(outfile, project, unitClass, options)
+            if outfile and outfile != sys.stdout:
+                outfile.close()
+                outfile = None
+        if outfile and outfile != old_stdout:
             outfile.close()
-        outfile.close()
-        sys.stdout = old_stdout
+            sys.stdout = old_stdout
 
     sys.stdout.write('\n')
 
@@ -142,7 +143,7 @@ def writeProjectInfo(info):
     out += '    - Landuses: ' + str(info['landuses']) + '\n'
     out += '  Number of Orphan Contexts: ' + str(len(info['orphans'])) + '\n'
     if info['orphans']:
-        out += '    ' + str(info['orphans']) + '\n'
+        out += '    ' + str(map(str, info['orphans'])) + '\n'
     if info['subgroups'] > 0:
         missing = missing = info['missing']['subgroup']
         out += '  Number of Contexts Missing Subgroup: ' + str(len(missing)) + '\n'

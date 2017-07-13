@@ -29,12 +29,12 @@ from harris.utilities import *
 
 class Gml():
 
-    def write(self, project, unitClass, options):
-
+    def write(self, outfile, project, unitClass, options):
+        self._file = outfile
         self._writeHeader()
 
         for unit in project.units(unitClass):
-            if options['aggregate']:
+            if options['aggregate'] and unit.aggregate():
                 gid = unit.aggregate().node()
             else:
                 gid = ''
@@ -53,6 +53,7 @@ class Gml():
                 self._writeAggregate(unit.node(), unit.id(), 'Subgroup')
 
         self._writeFooter()
+        self._file = None
 
     def writeSubgroup(self, project, options):
 
@@ -87,40 +88,40 @@ class Gml():
         self._writeFooter()
 
     def _writeHeader(self):
-        print 'graph ['
-        print '    directed 1'
+        self._writeline('graph [')
+        self._writeline('    directed 1')
 
     def _writeFooter(self):
-        print ']'
+        self._writeline(']')
 
     def _writeNode(self, nodeId, unitId, groupId, style, width, height):
-        print '    node ['
-        print '        id ' + str(nodeId)
-        print '        label ' + doublequote(unitId)
+        self._writeline('    node [')
+        self._writeline('        id ' + str(nodeId))
+        self._writeline('        label ' + doublequote(unitId))
         if style:
-            print '        graphics ['
-            print '            type "rectangle"'
-            print '            w ' + str(width)
-            print '            h ' + str(height)
-            print '        ]'
+            self._writeline('        graphics [')
+            self._writeline('            type "rectangle"')
+            self._writeline('            w ' + str(width))
+            self._writeline('            h ' + str(height))
+            self._writeline('        ]')
         if groupId:
-            print '        gid ' + str(groupId)
-        print '    ]'
+            self._writeline('        gid ' + str(groupId))
+        self._writeline('    ]')
 
     def _writeAggregate(self, nodeId, unitId, name):
-        print '    node ['
-        print '        id ' + str(nodeId)
-        print '        label ' + doublequote(name + ' ' + unitId)
-        print '        isGroup 1'
-        print '    ]'
+        self._writeline('    node [')
+        self._writeline('        id ' + str(nodeId))
+        self._writeline('        label ' + doublequote(name + ' ' + unitId))
+        self._writeline('        isGroup 1')
+        self._writeline('    ]')
 
     def _writeEdge(self, edgeId, fromNodeId, toNodeId, style):
-        print '    edge ['
-        print '        id ' + str(edgeId)
-        print '        source ' + str(fromNodeId)
-        print '        target ' + str(toNodeId)
+        self._writeline('    edge [')
+        self._writeline('        id ' + str(edgeId))
+        self._writeline('        source ' + str(fromNodeId))
+        self._writeline('        target ' + str(toNodeId))
         if style:
-            print '        graphics ['
-            print '            arrow "none"'
-            print '        ]'
-        print '    ]'
+            self._writeline('        graphics [')
+            self._writeline('            arrow "none"')
+            self._writeline('        ]')
+        self._writeline('    ]')

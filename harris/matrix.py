@@ -97,7 +97,7 @@ class Matrix():
 
         A unit may be any hashable type such as string, number, or hashable class.
         """
-        if fromUnit == toUnit:
+        if not fromUnit.isValid() or not toUnit.isValid() or fromUnit == toUnit:
             return False
         if reln == Matrix.Above:
             self._strat.add_edge(fromUnit, toUnit)
@@ -127,6 +127,8 @@ class Matrix():
 
         The destination group may be any iterable collection.
         """
+        if not fromUnit.isValid() or not toUnits:
+            return False
         if reln == Matrix.Above:
             toUnits.insert(0, fromUnit)
             self._strat.add_star(toUnits)
@@ -155,9 +157,12 @@ class Matrix():
         self._strat.add_path(unitsChain)
 
     def removeUnit(self, unit):
-        self._strat.remove_node(unit)
-        self._same.remove_node(unit)
-        self._contemp.remove_node(unit)
+        if unit in self._strat:
+            self._strat.remove_node(unit)
+        if unit in self._same:
+            self._same.remove_node(unit)
+        if unit in self._contemp:
+            self._contemp.remove_node(unit)
 
     def removeRelationship(self, fromUnit, reln, toUnit):
         """Remove a relationship from the Matrix if it exists."""
@@ -233,24 +238,26 @@ class Matrix():
 
     def sameAs(self, unit):
         """Returns a list of all units the same as a given unit in the matrix"""
-        if unit in self._strat:
-            return self._same.neighbours(unit)
+        if unit in self._same:
+            return self._same.neighbors(unit)
         return []
 
     def contemporaryWith(self, unit):
         """Returns a list of all units contemporary with a given unit in the matrix"""
-        return self._contemp.neighbours(unit)
+        if unit in self._contemp:
+            return self._contemp.neighbors(unit)
+        return []
 
     def ancestors(self, unit):
         """Returns a list of *all* units above a given unit in the matrix"""
         if unit in self._strat:
-            return nx.ancestors(self._strat, unit)
+            return list(nx.ancestors(self._strat, unit))
         return []
 
     def descendents(self, unit):
         """Returns a list of *all* units below a given unit in the matrix"""
         if unit in self._strat:
-            return nx.descendents(self._strat, unit)
+            return list(nx.descendants(self._strat, unit))
         return []
 
     def hasUnit(self, unit):
@@ -266,14 +273,17 @@ class Matrix():
         # foreach _same node, pick the lowest number
         # foreach _same node, apply all relns to lowest number
         subgraphs = nx.connected_components(self._same)
+        remove = []
         for subgraph in subgraphs:
             subgraph = sorted(subgraph)
             unit = subgraph.pop(0)
             for sameAs in subgraph:
-                self.addRelationships(self, unit, self.Below, self.predecessors(sameAs))
-                self.addRelationships(self, unit, self.Above, self.descendents(sameAs))
-                self.addRelationships(self, unit, self.ContemporaryWith, self.contemporaryWith(sameAs))
-                project.removeUnit(sameAs)
+                self.addRelationships(unit, self.Below, self.predecessors(sameAs))
+                self.addRelationships(unit, self.Above, self.descendents(sameAs))
+                self.addRelationships(unit, self.ContemporaryWith, self.contemporaryWith(sameAs))
+                remove.append(sameAs)
+        for sameAs in remove:
+            project.removeUnit(sameAs)
 
     def reduce(self, remove=True):
         """Reduces a valid matrix by removing redundant edges. This transforms the matrix in place."""
@@ -305,7 +315,7 @@ class Matrix():
         for node in self._strat.nodes():
             if self._strat.in_degree(node) == 0:
                 nodes.append(node)
-        return nodes
+        return sorted(nodes)
 
     def missingSuccessors(self):
         """Returns a list of any nodes missing a successor."""
@@ -313,7 +323,7 @@ class Matrix():
         for node in self._strat.nodes():
             if self._strat.out_degree(node) == 0:
                 nodes.append(node)
-        return nodes
+        return sorted(nodes)
 
     def weight(self, fromUnit, toUnit):
         if fromUnit in self._strat and toUnit in self._strat:

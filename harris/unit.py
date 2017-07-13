@@ -97,6 +97,9 @@ class Unit():
     def key(self):
         return self._key
 
+    def isValid(self):
+        return self._key and self._nid
+
     def siteCode(self):
         return self._siteCode
 

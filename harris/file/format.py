@@ -31,10 +31,12 @@ from harris.file.tgf import Tgf
 
 class Format():
 
+    _file = None
+
     @staticmethod
     def createFormat(suffix):
         if (suffix == 'lst'):
-            return Lst()
+            return Lst(outfile)
         elif (suffix == 'csv'):
             return Csv()
         elif (suffix == 'graphml'):
@@ -48,3 +50,6 @@ class Format():
         elif (suffix == 'gml'):
             return Gml()
         return None
+
+    def _writeline(line):
+        self._file.write(str(line) + '\n')

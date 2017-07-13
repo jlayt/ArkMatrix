@@ -54,26 +54,29 @@ class Csv():
                         unit.setType(Unit.Class.index(target))
                     continue
                 if tag == 'status':
-                    if target in Unit.Status:
+                    if source and target in Unit.Status:
                         # TODO Status of subgroup/group/landuse?
                         unit = self._unit(project, source, Unit.Context)
                         unit.setStatus(Unit.Status.index(target))
                     continue
                 if tag == 'group':
-                    subgroup = self._unit(project, source, Unit.Subgroup)
-                    group = self._unit(project, target, Unit.Group)
-                    project.addAggregate(subgroup, group)
+                    if source and target:
+                        subgroup = self._unit(project, source, Unit.Subgroup)
+                        group = self._unit(project, target, Unit.Group)
+                        project.addAggregate(subgroup, group)
                 elif tag == 'subgroup':
-                    context = self._unit(project, source, Unit.Context)
-                    subgroup = self._unit(project, target, Unit.Subgroup)
-                    project.addAggregate(context, subgroup)
+                    if source and target:
+                        context = self._unit(project, source, Unit.Context)
+                        subgroup = self._unit(project, target, Unit.Subgroup)
+                        project.addAggregate(context, subgroup)
                 elif tag in Matrix.Relationship:
                     if not source:
                         source = prevTarget
                     prevTarget = target
-                    source = self._unit(project, source, Unit.Context)
-                    target = self._unit(project, target, Unit.Context)
-                    project.addRelationship(source, Matrix.Relationship.index(tag), target)
+                    if source and target:
+                        source = self._unit(project, source, Unit.Context)
+                        target = self._unit(project, target, Unit.Context)
+                        project.addRelationship(source, Matrix.Relationship.index(tag), target)
             #except:
                 #if record:
                     #print 'Error reading row: ' + str(record)
@@ -86,7 +89,8 @@ class Csv():
         project.addUnit(unit)
         return unit
 
-    def write(self, project, unitClass, options):
+    def write(self, outfile, project, unitClass, options):
+        self._file = outfile
         self._print(project.siteCode, '', 'site')
         self._print(project.dataset, '', 'dataset')
         for unit in project.units(unitClass):
@@ -101,7 +105,8 @@ class Csv():
                 aggregate = unit.aggregate()
                 if aggregate is not None:
                     self._print(unit.id(), aggregate.id(), Unit.Class(aggrgate.unitClass()))
+        self._file = None
 
     def _print(self, source, target, tag):
         if source and tag:
-            print doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag)
+            print self._writeline(doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag))

@@ -85,6 +85,8 @@ class Project():
         return sorted(self._units[unitClass].values())
 
     def addUnit(self, unit):
+        if not unit.isValid():
+            return
         self._units[unit.unitClass()][unit.key()] = unit
         if unit.unitClass() > Unit.Context and unit.key() not in self._aggregates[unit.unitClass()]:
             self._aggregates[unit.unitClass()][unit.key()] = {}

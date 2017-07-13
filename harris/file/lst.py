@@ -21,6 +21,7 @@
  ***************************************************************************/
 """
 
+from harris.project import Project
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
@@ -30,7 +31,8 @@ class Lst():
     # Temp default site code
     _siteCode = ''
 
-    def read(self, infile, project):
+    def read(self, infile, dataset = '', siteCode = ''):
+        project = Project(dataset, siteCode)
         line = infile.readline().strip()
         project.dataset = line.strip()[len('Stratigraphic Dataset'):].strip()
         self._siteCode = project.siteCode
