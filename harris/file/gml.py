@@ -23,11 +23,12 @@
 
 import zlib
 
+from harris.file.format import Format
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Gml():
+class Gml(Format):
 
     def write(self, outfile, project, unitClass, options):
         self._file = outfile
@@ -54,38 +55,6 @@ class Gml():
 
         self._writeFooter()
         self._file = None
-
-    def writeSubgroup(self, project, options):
-
-        self._writeHeader()
-
-        for subgroup in project.units(Unit.Subgroup).values():
-            self._writeNode(subgroup.node(), subgroup.id(), '', options['style'], options['width'], options['height'])
-
-        eid = 0
-        for edge in project.matrix(Unit.Subgroup).relationships():
-            self._writeEdge(eid, edge[0].node(), edge[1].node(), options['style'])
-            eid += 1
-
-        if options['aggregate']:
-            for unit in project.units(Unit.Group):
-                self._writeAggregate(unit.node(), unit.id(), 'Group')
-
-        self._writeFooter()
-
-    def writeGroup(self, project, options):
-
-        self._writeHeader()
-
-        for group in project.units(Unit.Group).values():
-            self._writeNode(group.node(), group.id(), '', options['style'], options['width'], options['height'])
-
-        eid = 0
-        for edge in project.matrix(Unit.Group).relationships():
-            self._writeEdge(eid, edge[0].node(), edge[1].node(), options['style'])
-            eid += 1
-
-        self._writeFooter()
 
     def _writeHeader(self):
         self._writeline('graph [')

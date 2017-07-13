@@ -23,12 +23,13 @@
 
 import csv
 
+from harris.file.format import Format
 from harris.project import Project
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Csv():
+class Csv(Format):
 
     def read(self, infile, dataset = '', siteCode = ''):
         project = Project(dataset, siteCode)

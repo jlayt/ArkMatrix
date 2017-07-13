@@ -42,6 +42,7 @@ def parseArguments():
     parser.add_argument("--orphans", help="Include orphan units in output (format dependent)", action='store_true')
     parser.add_argument("--width", help="Width of node if --style is set", type=float, default=50.0)
     parser.add_argument("--height", help="Height of node if --style is set", type=float, default=25.0)
+    parser.add_argument("--filename", help="Base filename for file output", default='')
     parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=None)
     parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=None)
     return parser.parse_args()
@@ -49,21 +50,37 @@ def parseArguments():
 def options(args):
     options = vars(args)
 
-    if not options['input'] and args.infile.name != '<stdin>':
-        basename, suffix = os.path.splitext(args.infile.name)
-        options['input'] = suffix.strip('.')
-    if not options['input']:
-        options['input'] = 'csv'
-    options['input'] = options['input'].lower()
+    if args.infile and args.infile.name != '<stdin>':
+        infile = args.infile
+        basename, suffix = os.path.splitext(infile.name)
+        if not options['filename']:
+            options['filename'] = basename
+        options['input'] = suffix.strip('.').lower()
+    else:
+        infile = sys.stdin
+        if not options['filename']:
+            if option['site']:
+                options['filename'] = option['site']
+            elif option['name']:
+                options['filename'] = option['name']
+            else:
+                options['filename'] = 'matrix'
+        if not options['input']:
+            options['input'] = 'csv'
 
-    if not options['output'] and args.outfile.name != '<stdout>':
+    if args.outfile and args.outfile.name != '<stdout>':
+        outfile = args.outfile
         basename, suffix = os.path.splitext(args.outfile.name)
         options['output'] = suffix.strip('.')
         options['outpath'] = os.path.dirname(args.outfile.name)
         options['outname'] = basename
-    if not options['output']:
+    else:
+        outfile = sys.stdout
+
+    if options['output']:
+        options['output'] = options['output'].lower()
+    else:
         options['output'] = 'none'
-    options['output'] = options['output'].lower()
 
     if 'outname' not in options:
         if args.name and args.site:
@@ -78,7 +95,7 @@ def options(args):
     return options
 
 def process(infile, outfile, options):
-    formatter = Format.createFormat(options['input'])
+    formatter = createFormat(options['input'])
     project = formatter.read(infile, options['name'], options['site'])
 
     sys.stdout.write('\nOriginal Matrix:\n\n')
@@ -113,10 +130,10 @@ def process(infile, outfile, options):
         writeRelationships(redundant)
 
     if outfile or options['output'] != 'none':
-        sys.stdout.write(options['outpath'] + '\n')
-        sys.stdout.write(options['outname'] + '\n')
-        sys.stdout.write(options['output'] + '\n')
-        formatter = Format.createFormat(options['output'])
+        toFile = outfile != sys.stdout
+        if not stdout:
+            old_stdout = sys.stdout
+        formatter = createFormat(options['output'])
         for unitClass in range(Unit.Context, Unit.Landuse):
             if project.matrix(unitClass).count() > 0:
                 if not outfile:
