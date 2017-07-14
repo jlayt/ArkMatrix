@@ -21,11 +21,16 @@
  ***************************************************************************/
 """
 
+from harris.file.formatter import Formatter
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Gxl():
+class Gxl(Formatter):
+
+    def __init__(self):
+        self._read = False
+        self._write = True
 
     def write(self, project, options):
         print '<?xml version="1.0" encoding="UTF-8"?>'
@@ -33,14 +38,17 @@ class Gxl():
 
         print '<gxl xmlns:xlink=" http://www.w3.org/1999/xlink">'
 
-        print '    <graph id="' + project.dataset + '" edgeids="true" edgemode="directed">'
+        print '    <graph id="' + project.dataset() + '" edgeids="true" edgemode="directed">'
 
         for unit in project.units():
-            print '        <node id=' + doublequote(unit.unitId()) + '/>'
+            print '        <node id=' + doublequote(unit.id()) + '/>'
 
         eid = 0
-        for edge in project.matrix._strat.edges_iter():
-            print '        <edge id=' + doublequote(eid)+ ' from="' + doublequote(project.unit(edge[0]).id()) + ' to=' + doublequote(project.unit(edge[0]).unitId()) + '/>'
+        for edge in project.matrix(Unit.Context).relationships():
+            frm = edge[0]
+            to = edge[1]
+            print '        <edge id=' + doublequote(eid)+ ' from="' + doublequote(edge[0].id()) + ' to=' + doublequote(edge[1].id()) + '/>'
+            eid += 1
 
         print '    </graph>'
         print '</gxl>'

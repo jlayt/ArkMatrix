@@ -23,12 +23,16 @@
 
 import zlib
 
-from harris.file.format import Format
+from harris.file.formatter import Formatter
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Gml(Format):
+class Gml(Formatter):
+
+    def __init__(self):
+        self._read = False
+        self._write = True
 
     def write(self, outfile, project, unitClass, options):
         self._file = outfile

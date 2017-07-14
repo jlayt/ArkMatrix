@@ -204,12 +204,12 @@ class Matrix():
             return self._contemp.has_edge(fromUnit, toUnit)
         return False
 
-    def relationships(self, reln=None):
+    def relationships(self, reln=None, nbunch = None, data = None, default = None):
         """Returns a list of all relationships of a certain type."""
         if reln == Matrix.SameAs:
-            return self._same.edges_iter()
+            return self._same.edges_iter(nbunch = nbunch, data = data, default = default)
         if reln == Matrix.ContemporaryWith:
-            return self._contemp.edges_iter()
+            return self._contemp.edges_iter(nbunch = nbunch, data = data, default = default)
         return self._strat.edges_iter()
 
     def related(self, unit, reln = None):

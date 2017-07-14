@@ -21,11 +21,16 @@
  ***************************************************************************/
 """
 
+from harris.file.formatter import Formatter
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Gv():
+class Gv(Formatter):
+
+    def __init__(self):
+        self._read = False
+        self._write = True
 
     def write(self, project, options):
         print 'digraph ' + project.dataset.replace(' ', '_') + ' {'
@@ -38,8 +43,9 @@ class Gv():
             print '    node [shape=box]'
             print '    edge [arrowhead=none headport=n tailport=s width=' + str(options['width']) + ' height=' + str(options['height']) + ']'
 
-        for edge in project.matrix._strat.edges_iter(data='weight', default=1):
-            out = '    ' + doublequote(project.unit(edge[0]).unitId()) + ' -> ' + doublequote(project.unit(edge[1]).unitId())
+
+        for edge in project.matrix(Unit.Context).relationships(data='weight', default=1):
+            out = '    ' + doublequote(edge[0].id()) + ' -> ' + doublequote(edge[1].id())
             if options['style']:
                 out += ' [weight=' + str(edge[2]) + ']'
             print out + ';'

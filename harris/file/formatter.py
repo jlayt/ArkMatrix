@@ -21,30 +21,24 @@
  ***************************************************************************/
 """
 
-from harris.file.csvfile import Csv
-from harris.file.gml import Gml
-from harris.file.graphml import GraphML
-from harris.file.gv import Gv
-from harris.file.gxl import Gxl
-from harris.file.lst import Lst
-from harris.file.tgf import Tgf
+class Formatter():
 
-class Format():
+    _read = False
+    _write = False
+    _file = None
 
-    @staticmethod
-    def createFormat(suffix):
-        if (suffix == 'lst'):
-            return Lst(outfile)
-        elif (suffix == 'csv'):
-            return Csv()
-        elif (suffix == 'graphml'):
-            return GraphML()
-        elif (suffix == 'gv' or suffix == 'dot'):
-            return Gv()
-        elif (suffix == 'gxl'):
-            return Gxl()
-        elif (suffix == 'tgf'):
-            return Tgf()
-        elif (suffix == 'gml'):
-            return Gml()
-        return None
+    def canRead(self):
+        return self._read
+
+    def canWrite(self):
+        return self._write
+
+    def read(self, infile, dataset = '', siteCode = ''):
+        return
+
+    def write(self, outfile, project, unitClass, options):
+        return
+
+    def _writeline(self, line):
+        if self._file:
+            self._file.write(str(line) + '\n')

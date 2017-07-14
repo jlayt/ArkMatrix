@@ -7,7 +7,7 @@
                               -------------------
         begin                : 2016-02-29
         git sha              : $Format:%H$
-        copyright            : 2016 by John Layt
+        copyright            : 2017 by John Layt
         email                : john@layt.net
  ***************************************************************************/
 
@@ -21,11 +21,14 @@
  ***************************************************************************/
 """
 
+from harris.file.formatter import Formatter
 from harris.unit import Unit
-from harris.matrix import Matrix
-from harris.utilities import *
 
-class Tgf():
+class Tgf(Formatter):
+
+    def __init__(self):
+        self._read = False
+        self._write = True
 
     def write(self, project, options):
         for unit in project.units(Unit.Context):

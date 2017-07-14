@@ -95,7 +95,7 @@ def options(args):
     return options
 
 def process(infile, outfile, options):
-    formatter = createFormat(options['input'])
+    formatter = Format.createFormat(options['input'])
     project = formatter.read(infile, options['name'], options['site'])
 
     sys.stdout.write('\nOriginal Matrix:\n\n')
@@ -129,24 +129,19 @@ def process(infile, outfile, options):
         redundant = project.redundant()
         writeRelationships(redundant)
 
-    if outfile or options['output'] != 'none':
-        toFile = outfile != sys.stdout
-        if not stdout:
-            old_stdout = sys.stdout
-        formatter = createFormat(options['output'])
+    if options['output'] != 'none':
+        formatter = Format.createFormat(options['output'])
         for unitClass in range(Unit.Context, Unit.Landuse):
             if project.matrix(unitClass).count() > 0:
                 if not outfile:
                     name = options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
                     outfile = open(name, 'w')
-                sys.stdout = outfile
                 formatter.write(outfile, project, unitClass, options)
             if outfile and outfile != sys.stdout:
                 outfile.close()
                 outfile = None
-        if outfile and outfile != old_stdout:
+        if outfile and outfile != sys.stdout:
             outfile.close()
-            sys.stdout = old_stdout
 
     sys.stdout.write('\n')
 

@@ -21,11 +21,16 @@
  ***************************************************************************/
 """
 
+from harris.file.formatter import Formatter
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class GraphML():
+class GraphML(Formatter):
+
+    def __init__(self):
+        self._read = False
+        self._write = True
 
     def write(self, project, options):
         print '<?xml version="1.0" encoding="UTF-8"?>'
@@ -47,28 +52,28 @@ class GraphML():
             print '         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
             print '         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">'
 
-        print '    <graph id="' + project.dataset + '" edgedefault="directed">'
+        print '    <graph id="' + project.dataset() + '" edgedefault="directed">'
 
         for unit in project.units():
             if options['style']:
-                print '        <node id=' + doublequote(unit.unitId()) + '>'
+                print '        <node id=' + doublequote(unit.id()) + '>'
                 print '            <port name="North"/>'
                 print '            <port name="South"/>'
                 #yEd support
                 print '            <data key="d5">'
                 print '                <y:ShapeNode>'
                 print '                    <y:Geometry height="' + str(options['height']) + '" width="' + str(options['width']) + '"/>'
-                print '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.unitId()) + '</y:NodeLabel>'
+                print '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.id()) + '</y:NodeLabel>'
                 print '                    <y:Shape type="rectangle"/>'
                 print '                </y:ShapeNode>'
                 print '            </data>'
                 print '        </node>'
             else:
-                print '        <node id=' + doublequote(unit.unitId()) + '/>'
+                print '        <node id=' + doublequote(unit.id()) + '/>'
 
         eid = 0
-        for edge in project.matrix._strat.edges_iter():
-            out = '        <edge id=' + doublequote(eid) + ' source=' + doublequote(project.unit(edge[0]).unitId()) + ' target=' + doublequote(project.unit(edge[1]).unitId())
+        for edge in project.matrix(Unit.Context).relationships():
+            out = '        <edge id=' + doublequote(eid) + ' source=' + doublequote(edge[0].id()) + ' target=' + doublequote(edge[1].id())
             if options['style']:
                 out += ' sourceport="South" targetport="North"/>'
             else:

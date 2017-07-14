@@ -26,15 +26,15 @@ from harris.matrix import Matrix
 
 class Project():
 
-    dataset = ''
-    siteCode = ''
+    _dataset = ''
+    _siteCode = ''
     _units = {}
     _aggregates = {}
     _matrices = {}
 
     def __init__(self, dataset='', siteCode=''):
-        self.dataset = dataset
-        self.siteCode = siteCode
+        self._dataset = dataset
+        self._siteCode = siteCode
         self._units[Unit.Context] = {}
         self._units[Unit.Subgroup] = {}
         self._units[Unit.Group] = {}
@@ -48,8 +48,8 @@ class Project():
 
     def info(self):
         info = {}
-        info['dataset'] =  self.dataset
-        info['siteCode'] =  self.siteCode
+        info['dataset'] =  self._dataset
+        info['siteCode'] =  self._siteCode
         info['contexts'] =  len(self._units[Unit.Context])
         info['subgroups'] =  len(self._units[Unit.Subgroup])
         info['groups'] =  len(self._units[Unit.Group])
@@ -71,6 +71,18 @@ class Project():
             if not matrix.isValid():
                 return False
         return True
+
+    def dataset(self):
+        return self._dataset
+
+    def setDataset(self, dataset):
+        self._dataset = dataset
+
+    def siteCode(self):
+        return self._siteCode
+
+    def setDataset(self, siteCode):
+        self._siteCode = siteCode
 
     def unit(self, key, unitClass):
         if str(key) in self._units[unitClass]:
@@ -137,8 +149,8 @@ class Project():
 
     def makeKey(self, unitId):
         unitId = str(unitId)
-        if self.siteCode and unitId:
-            return self.siteCode + '_' + unitId
+        if self._siteCode and unitId:
+            return self._siteCode + '_' + unitId
         else:
             return unitId
 

@@ -23,13 +23,17 @@
 
 import csv
 
-from harris.file.format import Format
+from harris.file.formatter import Formatter
 from harris.project import Project
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Csv(Format):
+class Csv(Formatter):
+
+    def __init__(self):
+        self._read = True
+        self._write = True
 
     def read(self, infile, dataset = '', siteCode = ''):
         project = Project(dataset, siteCode)
@@ -44,10 +48,10 @@ class Csv(Format):
                 else:
                     tag = 'above'
                 if tag == 'site':
-                    project.siteCode = source
+                    project.setSiteCode(source)
                     continue
                 if tag == 'dataset':
-                    project.dataset = source
+                    project.setDataset(source)
                     continue
                 if tag == 'type':
                     if target in Unit.Type:
@@ -86,14 +90,14 @@ class Csv(Format):
     def _unit(self, project, unitId, unitClass):
         if project.hasUnit(unitId, unitClass):
             return project.unit(unitId, unitClass)
-        unit = Unit(project.siteCode, unitId, unitClass)
+        unit = Unit(project.siteCode(), unitId, unitClass)
         project.addUnit(unit)
         return unit
 
     def write(self, outfile, project, unitClass, options):
         self._file = outfile
-        self._print(project.siteCode, '', 'site')
-        self._print(project.dataset, '', 'dataset')
+        self._print(project.siteCode(), '', 'site')
+        self._print(project.dataset(), '', 'dataset')
         for unit in project.units(unitClass):
             if unit.type() != Unit.Undefined:
                 self._print(unit.id(), Unit.Type(unit.type()), 'type')

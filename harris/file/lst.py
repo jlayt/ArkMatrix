@@ -5,7 +5,7 @@
         Part of the Archaeological Recording Kit by L-P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-02-29
+        begin                : 2017-02-29
         git sha              : $Format:%H$
         copyright            : 2016 by John Layt
         email                : john@layt.net
@@ -21,21 +21,26 @@
  ***************************************************************************/
 """
 
+from harris.file.formatter import Formatter
 from harris.project import Project
 from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
-class Lst():
+class Lst(Formatter):
 
     # Temp default site code
     _siteCode = ''
+
+    def __init__(self):
+        self._read = True
+        self._write = False
 
     def read(self, infile, dataset = '', siteCode = ''):
         project = Project(dataset, siteCode)
         line = infile.readline().strip()
         project.dataset = line.strip()[len('Stratigraphic Dataset'):].strip()
-        self._siteCode = project.siteCode
+        self._siteCode = project.siteCode()
         if not project.dataset:
             project.dataset = 'harris'
         line = infile.readline().strip()
