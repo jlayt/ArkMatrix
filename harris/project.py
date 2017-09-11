@@ -21,8 +21,9 @@
  ***************************************************************************/
 """
 
-from harris.unit import Unit
 from harris.matrix import Matrix
+from harris.unit import Unit
+
 
 class Project():
 
@@ -48,17 +49,17 @@ class Project():
 
     def info(self):
         info = {}
-        info['dataset'] =  self._dataset
-        info['siteCode'] =  self._siteCode
-        info['contexts'] =  len(self._units[Unit.Context])
-        info['subgroups'] =  len(self._units[Unit.Subgroup])
-        info['groups'] =  len(self._units[Unit.Group])
-        info['landuses'] =  len(self._units[Unit.Landuse])
-        info['units'] =  info['contexts'] + info['subgroups'] + info['groups'] + info['landuses']
-        info['orphans'] =  self.orphaned(Unit.Context)
+        info['dataset'] = self._dataset
+        info['siteCode'] = self._siteCode
+        info['contexts'] = len(self._units[Unit.Context])
+        info['subgroups'] = len(self._units[Unit.Subgroup])
+        info['groups'] = len(self._units[Unit.Group])
+        info['landuses'] = len(self._units[Unit.Landuse])
+        info['units'] = info['contexts'] + info['subgroups'] + info['groups'] + info['landuses']
+        info['orphans'] = self.orphaned(Unit.Context)
         info['missing'] = {}
-        info['missing']['subgroup'] =  self.unaggregated(Unit.Context)
-        info['missing']['group'] =  self.unaggregated(Unit.Subgroup)
+        info['missing']['subgroup'] = self.unaggregated(Unit.Context)
+        info['missing']['group'] = self.unaggregated(Unit.Subgroup)
         info['matrix'] = {}
         info['matrix']['context'] = self._matrices[Unit.Context].info()
         info['matrix']['subgroup'] = self._matrices[Unit.Subgroup].info()
@@ -81,7 +82,7 @@ class Project():
     def siteCode(self):
         return self._siteCode
 
-    def setDataset(self, siteCode):
+    def setSiteCode(self, siteCode):
         self._siteCode = siteCode
 
     def unit(self, key, unitClass):
@@ -106,7 +107,7 @@ class Project():
             aggregate = unit.aggregate()
             self._aggregates[aggregate.unitClass()][aggregate.key()][unit.key()] = unit
 
-    def hasUnit(self, unit, unitClass = Unit.Context):
+    def hasUnit(self, unit, unitClass=Unit.Context):
         if isinstance(unit, Unit):
             return unit.key() in self._units[unit.unitClass()].keys()
         return unit in self._units[unitClass].keys() or self.makeKey(unit) in self._units[unitClass].keys()
@@ -151,8 +152,7 @@ class Project():
         unitId = str(unitId)
         if self._siteCode and unitId:
             return self._siteCode + '_' + unitId
-        else:
-            return unitId
+        return unitId
 
     def matrix(self, unitClass):
         return self._matrices[unitClass]
@@ -174,7 +174,7 @@ class Project():
 
     def reduce(self):
         self._matrices[Unit.Context].reduceSameAs(self)
-        self._matrices[Unit.Context].reduce()
+        return self._matrices[Unit.Context].reduce()
 
     def aggregate(self):
         self._matrices[Unit.Context].reduceSameAs(self)
