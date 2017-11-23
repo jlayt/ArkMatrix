@@ -22,20 +22,26 @@
  ***************************************************************************/
 """
 
-import os, sys, argparse
+import argparse
+import os
+import sys
 
+from harris.file.format import Format
 from harris.project import Project
 from harris.unit import Unit
-from harris.file.format import Format
 
-def parseArguments():
+
+def getParser():
     parser = argparse.ArgumentParser(description='A tool to process Harris Matrix files.')
-    parser.add_argument("-i", "--input", help="Choose input format, optional, defaults to infile suffix", choices=['lst', 'csv'])
-    parser.add_argument("-o", "--output", help="Choose output format, optional, defaults to outfile suffix", choices=['none', 'gv', 'dot', 'gml', 'graphml', 'gxl', 'tgf', 'csv'])
+    parser.add_argument(
+        "-i", "--input", help="Choose input format, optional, defaults to infile suffix", choices=['lst', 'csv'])
+    parser.add_argument("-o", "--output", help="Choose output format, optional, defaults to outfile suffix",
+                        choices=['none', 'gv', 'dot', 'gml', 'graphml', 'gxl', 'tgf', 'csv'])
     parser.add_argument("-r", "--reduce", help="Apply a transitive reduction to the input graph", action='store_true')
     parser.add_argument("-a", "--aggregate", help="Generate aggregate Matrices", action='store_true')
     parser.add_argument("-s", "--style", help="Include basic style formatting in output", action='store_true')
-    parser.add_argument("--all", help="Apply full options to processing, i.e. reduce, aggregate, style", action='store_true')
+    parser.add_argument(
+        "--all", help="Apply full options to processing, i.e. reduce, aggregate, style", action='store_true')
     parser.add_argument("--site", help="Site Code for Matrix", default='')
     parser.add_argument("--name", help="Name for Matrix", default='')
     parser.add_argument("--sameas", help="Include Same-As relationships in output", action='store_true')
@@ -45,9 +51,10 @@ def parseArguments():
     parser.add_argument("--filename", help="Base filename for file output", default='')
     parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=None)
     parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=None)
-    return parser.parse_args()
+    return parser
 
-def options(args):
+
+def getOptions(args):
     options = vars(args)
 
     if args.infile and args.infile.name != '<stdin>':
@@ -59,10 +66,10 @@ def options(args):
     else:
         infile = sys.stdin
         if not options['filename']:
-            if option['site']:
-                options['filename'] = option['site']
-            elif option['name']:
-                options['filename'] = option['name']
+            if options['site']:
+                options['filename'] = options['site']
+            elif options['name']:
+                options['filename'] = options['name']
             else:
                 options['filename'] = 'matrix'
         if not options['input']:
@@ -93,6 +100,7 @@ def options(args):
             options['outname'] = 'matrix'
 
     return options
+
 
 def process(infile, outfile, options):
     formatter = Format.createFormat(options['input'])
@@ -145,6 +153,7 @@ def process(infile, outfile, options):
 
     sys.stdout.write('\n')
 
+
 def writeProjectInfo(info):
     out = '  Dataset: ' + info['dataset'] + '\n'
     out += '  Site Code: ' + info['siteCode'] + '\n'
@@ -174,6 +183,7 @@ def writeProjectInfo(info):
     if info['groups'] > 0:
         writeMatrixInfo(info['matrix']['group'])
 
+
 def writeMatrixInfo(info):
     out = '  Strat Units: ' + str(info['strat']['nodes']) + '\n'
     out += '  Strat Relationships: ' + str(info['strat']['edges']) + '\n'
@@ -191,11 +201,17 @@ def writeMatrixInfo(info):
     out += '  Longest Path: ' + str(info['longest']) + '\n'
     sys.stdout.write(out)
 
+
 def writeRelationships(relationships):
     sys.stdout.write('  Redundant Relationships: ' + str(len(relationships)) + '\n')
     for edge in relationships:
         sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
     sys.stdout.write('\n')
 
-args = parseArguments()
-process(args.infile, args.outfile, options(args))
+
+parser = getParser()
+args = parser.parse_args()
+if args.infile is None:
+    parser.print_help()
+else:
+    process(args.infile, args.outfile, getOptions(args))
