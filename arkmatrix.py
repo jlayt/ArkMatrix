@@ -112,30 +112,31 @@ def process(infile, outfile, options):
     if not options['orphans']:
         project.removeOrphans(Unit.Context)
 
-    if not project.isValid():
-        sys.stdout.write('\n\nInvalid Matrix\n\n')
-        for matrix in project.matrices():
-            for cycle in matrix.cycles():
-                sys.stdout.write('Cycle: ' + str(cycle) + '\n')
-        sys.stdout.write('\n')
-        return
-
-    sys.stdout.write('\n\nProcessed Matrix:\n\n')
-    if options['aggregate']:
-        redundant = project.aggregate()
-        writeRelationships(redundant)
-        writeProjectInfo(project.info())
-        for unitClass in range(Unit.Subgroup, Unit.Landuse):
-            if project.matrix(unitClass).count() > 0:
-                sys.stdout.write('\n\n' + Unit.Class[unitClass].title() + ' Matrix:\n\n')
-                writeMatrixInfo(project.matrix(unitClass).info())
-    elif options['reduce']:
-        redundant = project.reduce()
-        writeRelationships(redundant)
-        writeProjectInfo(project.info())
+    if project.isValid():
+        sys.stdout.write('\n\nProcessed Matrix:\n\n')
+        if options['aggregate']:
+            redundant = project.aggregate()
+            writeRelationships(redundant)
+            writeProjectInfo(project.info())
+            for unitClass in range(Unit.Subgroup, Unit.Landuse):
+                if project.matrix(unitClass).count() > 0:
+                    sys.stdout.write('\n\n' + Unit.Class[unitClass].title() + ' Matrix:\n\n')
+                    writeMatrixInfo(project.matrix(unitClass).info())
+        elif options['reduce']:
+            redundant = project.reduce()
+            writeRelationships(redundant)
+            writeProjectInfo(project.info())
+        else:
+            redundant = project.redundant()
+            writeRelationships(redundant)
     else:
-        redundant = project.redundant()
-        writeRelationships(redundant)
+        sys.stdout.write('\n\nInvalid Matrix\n\n')
+        for unitClass in range(Unit.Context, Unit.Landuse):
+            for cycle in project.matrix(unitClass).cycles():
+                out = 'Cycle: '
+                out += str(map(str, cycle)) + '\n'
+                sys.stdout.write(out)
+        sys.stdout.write('\n')
 
     if options['output'] != 'none':
         formatter = Format.createFormat(options['output'])
