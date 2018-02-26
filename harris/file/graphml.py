@@ -32,61 +32,67 @@ class GraphML(Formatter):
         self._read = False
         self._write = True
 
-    def write(self, project, options):
-        print '<?xml version="1.0" encoding="UTF-8"?>'
+    def write(self, outfile, project, unitClass, options):
+        self._file = outfile
+
+        self._writeline('<?xml version="1.0" encoding="UTF-8"?>')
 
         if options['style']:
             #yEd support
-            print '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"'
-            print '         xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"'
-            print '         xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"'
-            print '         xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"'
-            print '         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-            print '         xmlns:y="http://www.yworks.com/xml/graphml"'
-            print '         xmlns:yed="http://www.yworks.com/xml/yed/3"'
-            print '         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">'
-            print '    <key for="node" id="d5" yfiles.type="nodegraphics"/>'
-            print '    <key for="edge" id="d9" yfiles.type="edgegraphics"/>'
+            self._writeline('<graphml xmlns="http://graphml.graphdrawing.org/xmlns"')
+            self._writeline('         xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"')
+            self._writeline('         xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"')
+            self._writeline('         xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"')
+            self._writeline('         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
+            self._writeline('         xmlns:y="http://www.yworks.com/xml/graphml"')
+            self._writeline('         xmlns:yed="http://www.yworks.com/xml/yed/3"')
+            self._writeline('         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">')
+            self._writeline('    <key for="node" id="d5" yfiles.type="nodegraphics"/>')
+            self._writeline('    <key for="edge" id="d9" yfiles.type="edgegraphics"/>')
         else:
-            print '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"'
-            print '         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-            print '         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">'
+            self._writeline('<graphml xmlns="http://graphml.graphdrawing.org/xmlns"')
+            self._writeline('         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
+            self._writeline('         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">')
 
-        print '    <graph id="' + project.dataset() + '" edgedefault="directed">'
+        self._writeline('    <graph id="' + project.dataset() + '" edgedefault="directed">')
 
-        for unit in project.units():
+        for unit in project.units(unitClass):
             if options['style']:
-                print '        <node id=' + doublequote(unit.id()) + '>'
-                print '            <port name="North"/>'
-                print '            <port name="South"/>'
+                self._writeline('        <node id=' + doublequote(unit.id()) + '>')
+                self._writeline('            <port name="North"/>')
+                self._writeline('            <port name="South"/>')
                 #yEd support
-                print '            <data key="d5">'
-                print '                <y:ShapeNode>'
-                print '                    <y:Geometry height="' + str(options['height']) + '" width="' + str(options['width']) + '"/>'
-                print '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.label()) + '</y:NodeLabel>'
-                print '                    <y:Shape type="rectangle"/>'
-                print '                </y:ShapeNode>'
-                print '            </data>'
-                print '        </node>'
+                self._writeline('            <data key="d5">')
+                self._writeline('                <y:ShapeNode>')
+                self._writeline('                    <y:Geometry height="' + str(options['height']) + '" width="' + str(options['width']) + '"/>')
+                self._writeline('                    <y:Fill hasColor="false" transparent="false"/>')
+                self._writeline('                    <y:BorderStyle color="#000000" type="line" width="1.0"/>')
+                self._writeline('                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.label()) + '</y:NodeLabel>')
+                self._writeline('                    <y:Shape type="rectangle"/>')
+                self._writeline('                </y:ShapeNode>')
+                self._writeline('            </data>')
+                self._writeline('        </node>')
             else:
-                print '        <node id=' + doublequote(unit.id()) + '/>'
+                self._writeline('        <node id=' + doublequote(unit.id()) + '/>')
 
         eid = 0
-        for edge in project.matrix(Unit.Context).relationships():
+        for edge in project.matrix(unitClass).relationships():
             out = '        <edge id=' + doublequote(eid) + ' source=' + doublequote(edge[0].id()) + ' target=' + doublequote(edge[1].id())
             if options['style']:
                 out += ' sourceport="South" targetport="North"/>'
             else:
                 out += '"/>'
-            print out
+            self._writeline(out)
             if options['style']:
-                print '            <data key="d9">'
-                print '                <y:PolyLineEdge>'
-                print '                    <y:Arrows source="none" target="none"/>'
-                print '                    <y:BendStyle smoothed="false"/>'
-                print '                </y:PolyLineEdge>'
-                print '            </data>'
+                self._writeline('            <data key="d9">')
+                self._writeline('                <y:PolyLineEdge>')
+                self._writeline('                    <y:Path sx="0.0" sy="12.5" tx="0.0" ty="-12.5"/>')
+                self._writeline('                    <y:LineStyle color="#000000" type="line" width="1.0"/>')
+                self._writeline('                    <y:Arrows source="none" target="none"/>')
+                self._writeline('                    <y:BendStyle smoothed="false"/>')
+                self._writeline('                </y:PolyLineEdge>')
+                self._writeline('            </data>')
             eid += 1
 
-        print '    </graph>'
-        print '</graphml>'
+        self._writeline('    </graph>')
+        self._writeline('</graphml>')

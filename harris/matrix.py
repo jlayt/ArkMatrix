@@ -281,6 +281,7 @@ class Matrix():
                 self.addRelationships(unit, self.Below, self.predecessors(sameAs))
                 self.addRelationships(unit, self.Above, self.descendents(sameAs))
                 self.addRelationships(unit, self.ContemporaryWith, self.contemporaryWith(sameAs))
+                unit.setLabel(unit.label() + ' = ' + sameAs.label())
                 remove.append(sameAs)
         for sameAs in remove:
             project.removeUnit(sameAs)
