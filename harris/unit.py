@@ -60,6 +60,7 @@ class Unit():
     _class = Context # Unit.Class
     _type = Undefined # Unit.Type
     _status = Allocated # Unit.Status
+    _label = None
     _aggregate = None
 
     def __init__(self, siteCode, unitId, unitClass = Context, unitType = Undefined, unitStatus = Allocated):
@@ -126,6 +127,14 @@ class Unit():
 
     def status(self):
         return self._status
+
+    def label(self):
+        if self._label is not None and self._label != '':
+            return self._label
+        return self.id()
+
+    def setLabel(self, label):
+        self._label = label
 
     def setAggregate(self, aggregate):
         if self._class + 1 == aggregate.unitClass():

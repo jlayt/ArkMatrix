@@ -64,6 +64,11 @@ class Csv(Formatter):
                         unit = self._unit(project, source, Unit.Context)
                         unit.setStatus(Unit.Status.index(target))
                     continue
+                if tag == 'label':
+                    if source and target:
+                        unit = self._unit(project, source, Unit.Context)
+                        unit.setLabel(target)
+                    continue
                 if tag == 'group':
                     if source and target:
                         subgroup = self._unit(project, source, Unit.Subgroup)
@@ -103,6 +108,8 @@ class Csv(Formatter):
                 self._print(unit.id(), Unit.Type(unit.type()), 'type')
             if unit.status() != Unit.Allocated:
                 self._print(unit.id(), Unit.Status(unit.status()), 'status')
+            if unit.label() is not None and unit.label() != '':
+                self._print(unit.id(), unit.label(), 'label')
             for child in project.successors(unit):
                 self._print(unit.id(), child.id(), 'above')
         for childClass in range(unitClass, Unit.Group):

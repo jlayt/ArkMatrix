@@ -191,11 +191,11 @@ def writeMatrixInfo(info):
     out += '  Same As Relationships: ' + str(info['same']['nodes']) + '\n'
     out += '  Contemporary Relationships: ' + str(info['contemp']['nodes']) + '\n'
     missing = info['missing']['predecessors']
-    out += '  Missing Predecessors: ' + str(len(missing)) + '\n'
+    out += '  Units With No Unit Above: ' + str(len(missing)) + '\n'
     if missing:
         out += '      ' + str(map(str, sorted(missing))) + '\n'
     missing = info['missing']['successors']
-    out += '  Missing Successors: ' + str(len(missing)) + '\n'
+    out += '  Units With No Unit Below: ' + str(len(missing)) + '\n'
     if missing:
         out += '      ' + str(map(str, sorted(missing))) + '\n'
     out += '  Is Valid: ' + str(info['valid']) + '\n'

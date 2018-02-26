@@ -44,7 +44,7 @@ class Gml(Formatter):
             else:
                 gid = ''
 
-            self._writeNode(unit.node(), unit.id(), gid, options['style'], options['width'], options['height'])
+            self._writeNode(unit.node(), unit.id(), unit.label(), gid, options['style'], options['width'], options['height'])
 
         eid = 0
         for edge in project.matrix(Unit.Context).relationships():
@@ -67,13 +67,14 @@ class Gml(Formatter):
     def _writeFooter(self):
         self._writeline(']')
 
-    def _writeNode(self, nodeId, unitId, groupId, style, width, height):
+    def _writeNode(self, nodeId, unitId, label, groupId, style, width, height):
         self._writeline('    node [')
         self._writeline('        id ' + str(nodeId))
-        self._writeline('        label ' + doublequote(unitId))
+        self._writeline('        label ' + doublequote(label))
         if style:
             self._writeline('        graphics [')
             self._writeline('            type "rectangle"')
+            self._writeline('            hasFill 0')
             self._writeline('            w ' + str(width))
             self._writeline('            h ' + str(height))
             self._writeline('        ]')

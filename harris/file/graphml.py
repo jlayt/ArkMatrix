@@ -63,7 +63,7 @@ class GraphML(Formatter):
                 print '            <data key="d5">'
                 print '                <y:ShapeNode>'
                 print '                    <y:Geometry height="' + str(options['height']) + '" width="' + str(options['width']) + '"/>'
-                print '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.id()) + '</y:NodeLabel>'
+                print '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.label()) + '</y:NodeLabel>'
                 print '                    <y:Shape type="rectangle"/>'
                 print '                </y:ShapeNode>'
                 print '            </data>'
