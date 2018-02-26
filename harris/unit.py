@@ -51,7 +51,7 @@ class Unit():
     # Counter for unique Node IDs
     _counter = itertools.count()
     # Node ID, unique over all unit types
-    _nid = 0
+    _nid = None
     _siteCode = ''
     # ID, unique within unit type and site code
     _id = ''
@@ -99,7 +99,7 @@ class Unit():
         return self._key
 
     def isValid(self):
-        return self._key and self._nid
+        return self._key and self._nid is not None
 
     def siteCode(self):
         return self._siteCode

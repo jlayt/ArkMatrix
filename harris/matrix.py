@@ -164,6 +164,11 @@ class Matrix():
         if unit in self._contemp:
             self._contemp.remove_node(unit)
 
+    def removeRelationships(self, fromUnit, reln, toUnits):
+        """Remove a bunch of relationships from the Matrix."""
+        for toUnit in toUnits:
+            self.removeRelationship(fromUnit, reln, toUnit)
+
     def removeRelationship(self, fromUnit, reln, toUnit):
         """Remove a relationship from the Matrix if it exists."""
         if reln == Matrix.Above:
@@ -268,23 +273,35 @@ class Matrix():
         """Returns a list of any cycles in the matrix."""
         return nx.simple_cycles(self._strat)
 
-    def reduceSameAs(self, project):
+    def resolveSameAs(self):
         """Resolve all SameAs relationships."""
         # foreach _same node, pick the lowest number
-        # foreach _same node, apply all relns to lowest number
+        # foreach _same node, apply all relns to lowest number, then apply to other nodes
         subgraphs = nx.connected_components(self._same)
-        remove = []
         for subgraph in subgraphs:
             subgraph = sorted(subgraph)
             unit = subgraph.pop(0)
             for sameAs in subgraph:
                 self.addRelationships(unit, self.Below, self.predecessors(sameAs))
-                self.addRelationships(unit, self.Above, self.descendents(sameAs))
+                self.addRelationships(unit, self.Above, self.successors(sameAs))
                 self.addRelationships(unit, self.ContemporaryWith, self.contemporaryWith(sameAs))
+            for sameAs in subgraph:
+                self.addRelationships(sameAs, self.Below, self.predecessors(unit))
+                self.addRelationships(sameAs, self.Above, self.successors(unit))
+                self.addRelationships(sameAs, self.ContemporaryWith, self.contemporaryWith(unit))
+
+    def redundantSameAs(self):
+        """Return a list of redundant SameAs units."""
+        # foreach _same node, pick the lowest number to keep, the rest can be removed
+        subgraphs = nx.connected_components(self._same)
+        redundant = []
+        for subgraph in subgraphs:
+            subgraph = sorted(subgraph)
+            unit = subgraph.pop(0)
+            for sameAs in subgraph:
                 unit.setLabel(unit.label() + ' = ' + sameAs.label())
-                remove.append(sameAs)
-        for sameAs in remove:
-            project.removeUnit(sameAs)
+                redundant.append(sameAs)
+        return redundant
 
     def reduce(self, remove=True):
         """Reduces a valid matrix by removing redundant edges. This transforms the matrix in place."""

@@ -105,6 +105,7 @@ def getOptions(args):
 def process(infile, outfile, options):
     formatter = Format.createFormat(options['input'])
     project = formatter.read(infile, options['name'], options['site'])
+    project.resolve()
 
     sys.stdout.write('\nOriginal Matrix:\n\n')
     writeProjectInfo(project.info())
