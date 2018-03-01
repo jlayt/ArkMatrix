@@ -112,6 +112,8 @@ class Csv(Formatter):
                 self._print(unit.id(), unit.label(), 'label')
             for child in project.matrix(unit.type()).successors(unit):
                 self._print(unit.id(), child.id(), 'above')
+            for sameas in project.matrix(unit.type()).sameAs(unit):
+                self._print(unit.id(), sameas.id(), 'sameas')
         for childClass in range(unitClass, Unit.Group):
             for unit in project.units(childClass):
                 aggregate = unit.aggregate()

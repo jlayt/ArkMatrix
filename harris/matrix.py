@@ -280,6 +280,11 @@ class Matrix():
         subgraphs = nx.connected_components(self._same)
         for subgraph in subgraphs:
             subgraph = sorted(subgraph)
+            allSameas = subgraph
+            for unit in subgraph:
+                for sameas in allSameas:
+                    if unit.id() != sameas.id():
+                        self.addRelationship(unit, self.SameAs, sameas)
             unit = subgraph.pop(0)
             for sameAs in subgraph:
                 self.addRelationships(unit, self.Below, self.predecessors(sameAs))
