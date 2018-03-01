@@ -8,6 +8,8 @@ The simple relationship format consists of two columns representing an Above rel
 
 Example:
 
+
+|       |       |
 |-------|-------|
 | Unit1 | Unit2 |
 | Unit2 | Unit3 |
@@ -45,6 +47,8 @@ Other tags may be included in the file, such as 'description' or 'location', but
 
 Example:
 
+
+|           |           |              |
 |-----------|-----------|--------------|
 | MNO12     |           | site         |
 | Area A    |           | dataset      |
