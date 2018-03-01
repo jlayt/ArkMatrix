@@ -182,10 +182,8 @@ class Project():
         return self._matrices[Unit.Context].reduce()
 
     def aggregate(self):
-        removed = self.reduce()
         for unitClass in range(Unit.Subgroup, Unit.Landuse):
             self.generateAggregateMatrix(unitClass)
-        return removed
 
     def simplify(self):
         redundant = self._matrices[Unit.Context].simplify()

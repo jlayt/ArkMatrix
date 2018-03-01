@@ -33,24 +33,21 @@ from harris.unit import Unit
 
 def getParser():
     parser = argparse.ArgumentParser(description='A tool to process Harris Matrix files.')
-    parser.add_argument(
-        "-i", "--input", help="Choose input format, optional, defaults to infile suffix", choices=['lst', 'csv'])
-    parser.add_argument("-o", "--output", help="Choose output format, optional, defaults to outfile suffix",
-                        choices=['none', 'gv', 'dot', 'gml', 'graphml', 'gxl', 'tgf', 'csv'])
-    parser.add_argument("-r", "--reduce", help="Apply a transitive reduction to the input graph", action='store_true')
-    parser.add_argument("-a", "--aggregate", help="Generate aggregate Matrices", action='store_true')
-    parser.add_argument("-s", "--style", help="Include basic style formatting in output", action='store_true')
-    parser.add_argument(
-        "--all", help="Apply full options to processing, i.e. reduce, aggregate, style", action='store_true')
+    parser.add_argument("-i", "--input", help="Choose input format, optional, defaults to infile suffix",
+                        choices=['lst', 'csv'])
+    parser.add_argument("-v", "--validate", help="Only validate the input file, don't process", action='store_false')
+    parser.add_argument("-g", "--graph", help="Output a graph in the chosen format",
+                        choices=['none', 'gv', 'dot', 'gml', 'graphml', 'gxl', 'tgf'])
     parser.add_argument("--site", help="Site Code for Matrix", default='')
     parser.add_argument("--name", help="Name for Matrix", default='')
-    parser.add_argument("--same", help="Include Same-As relationships in output", action='store_true')
-    parser.add_argument("--orphans", help="Include orphan units in output (format dependent)", action='store_true')
-    parser.add_argument("--width", help="Width of node if --style is set", type=float, default=50.0)
-    parser.add_argument("--height", help="Height of node if --style is set", type=float, default=25.0)
-    parser.add_argument("--filename", help="Base filename for file output", default='')
+    parser.add_argument("--nostyle", help="Don't include style formatting in graph", action='store_false')
+    parser.add_argument("--same", help="Include Same-As units/relationships in graph", action='store_false')
+    parser.add_argument("--orphan", help="Include orphan units in graph (format dependent)", action='store_false')
+    parser.add_argument("--width", help="Width of graph node", type=float, default=50.0)
+    parser.add_argument("--height", help="Height of graph node", type=float, default=25.0)
+    parser.add_argument("--basename", help="Base filename for file output", default='')
     parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=None)
-    parser.add_argument('outfile', help="Destination data file", nargs='?', type=argparse.FileType('w'), default=None)
+    parser.add_argument('outfile', help="Destination csv file", nargs='?', type=argparse.FileType('w'), default=None)
     return parser
 
 
@@ -60,25 +57,25 @@ def getOptions(args):
     if args.infile and args.infile.name != '<stdin>':
         infile = args.infile
         basename, suffix = os.path.splitext(infile.name)
-        if not options['filename']:
-            options['filename'] = basename
+        if not options['basename']:
+            options['basename'] = basename
         options['input'] = suffix.strip('.').lower()
     else:
         infile = sys.stdin
-        if not options['filename']:
+        if not options['basename']:
             if options['site']:
-                options['filename'] = options['site']
+                options['basename'] = options['site']
             elif options['name']:
-                options['filename'] = options['name']
+                options['basename'] = options['name']
             else:
-                options['filename'] = 'matrix'
+                options['basename'] = 'matrix'
         if not options['input']:
             options['input'] = 'csv'
 
     if args.outfile and args.outfile.name != '<stdout>':
         outfile = args.outfile
         basename, suffix = os.path.splitext(args.outfile.name)
-        options['output'] = suffix.strip('.')
+        options['output'] = 'csv'
         options['outpath'] = os.path.dirname(args.outfile.name)
         options['outname'] = basename
     else:
@@ -115,21 +112,14 @@ def process(infile, outfile, options):
 
     if project.isValid():
         sys.stdout.write('\n\nProcessed Matrix:\n\n')
-        if options['aggregate']:
-            redundant = project.aggregate()
-            writeRelationships('  Redundant Relationships: ', redundant)
-            writeProjectInfo(project.info())
-            for unitClass in range(Unit.Subgroup, Unit.Landuse):
-                if project.matrix(unitClass).count() > 0:
-                    sys.stdout.write('\n\n' + Unit.Class[unitClass].title() + ' Matrix:\n\n')
-                    writeMatrixInfo(project.matrix(unitClass).info())
-        elif options['reduce']:
-            redundant = project.reduce()
-            writeRelationships('  Redundant Relationships: ', redundant)
-            writeProjectInfo(project.info())
-        else:
-            redundant = project.redundant()
-            writeRelationships('  Redundant Relationships: ', redundant)
+        redundant = project.reduce()
+        project.aggregate()
+        writeRelationships('  Redundant Relationships: ', redundant)
+        writeProjectInfo(project.info())
+        for unitClass in range(Unit.Subgroup, Unit.Landuse):
+            if project.matrix(unitClass).count() > 0:
+                sys.stdout.write('\n\n' + Unit.Class[unitClass].title() + ' Matrix:\n\n')
+                writeMatrixInfo(project.matrix(unitClass).info())
     else:
         sys.stdout.write('\n\nInvalid Matrix\n\n')
         for unitClass in range(Unit.Context, Unit.Landuse):
@@ -139,8 +129,8 @@ def process(infile, outfile, options):
                 sys.stdout.write(out)
         sys.stdout.write('\n')
 
-    if options['output'] != 'none':
-        formatter = Format.createFormat(options['output'])
+    if options['graph'] != 'none':
+        formatter = Format.createFormat(options['graph'])
         for unitClass in range(Unit.Context, Unit.Landuse):
             if project.matrix(unitClass).count() > 0:
                 if not outfile:
@@ -154,6 +144,21 @@ def process(infile, outfile, options):
             outfile.close()
 
     sys.stdout.write('\n')
+
+
+def writeGraphFile(project, format, options):
+    formatter = Format.createFormat(format)
+    for unitClass in range(Unit.Context, Unit.Landuse):
+        if project.matrix(unitClass).count() > 0:
+            if not outfile:
+                name = options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
+                outfile = open(name, 'w')
+            formatter.write(outfile, project, unitClass, options)
+        if outfile and outfile != sys.stdout:
+            outfile.close()
+            outfile = None
+    if outfile and outfile != sys.stdout:
+        outfile.close()
 
 
 def writeProjectInfo(info):
