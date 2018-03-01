@@ -4,11 +4,11 @@ ArkMatrix supports two versions of CSV file import/export, simple relationships 
 
 ## Simple Relationship Format
 
-The simple relationship format consists of two columns representing an Above relationship, i.e. the Stratigraphic Unit in column A is Above the Stratigraphic Unit in column B.
+The simple relationship format consists of two columns representing an Above relationship, i.e. the Stratigraphic Unit in column A is Above the Stratigraphic Unit in column B. There is no header row.
 
 Example:
 
-
+|       |       |
 |-------|-------|
 | Unit1 | Unit2 |
 | Unit2 | Unit3 |
@@ -18,7 +18,7 @@ Example:
 
 ## Tagged Relationship Format
 
-The tagged relationship format supports more features by allowing relationships to be tagged in a third column, i.e. the tag in column C defines the relationship between the Stratigraphic Units in columns A and B.
+The tagged relationship format supports more features by allowing relationships to be tagged in a third column, i.e. the tag in column C defines the relationship between the Stratigraphic Units in columns A and B. There is no header row defined.
 
 File Metadata Tags:
 * site
@@ -46,12 +46,13 @@ Other tags may be included in the file, such as 'description' or 'location', but
 
 Example:
 
-
+|           |           |              |
 |-----------|-----------|--------------|
 | MNO12     |           | site         |
 | Area A    |           | dataset      |
 | Unit1     | assigned  | status       |
 | Unit1     | fill      | class        |
+| Unit1     | label     | Unit 1       |
 | Unit7     | void      | status       |
 | Unit1     | Unit2     | above        |
 | Unit2     | Unit3     | above        |
