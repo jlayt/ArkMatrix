@@ -108,9 +108,9 @@ class Csv(Formatter):
                 self._print(unit.id(), Unit.Type(unit.type()), 'type')
             if unit.status() != Unit.Allocated:
                 self._print(unit.id(), Unit.Status(unit.status()), 'status')
-            if unit.label() is not None and unit.label() != '':
+            if unit.label() != unit.id():
                 self._print(unit.id(), unit.label(), 'label')
-            for child in project.successors(unit):
+            for child in project.matrix(unit.type()).successors(unit):
                 self._print(unit.id(), child.id(), 'above')
         for childClass in range(unitClass, Unit.Group):
             for unit in project.units(childClass):
@@ -121,4 +121,4 @@ class Csv(Formatter):
 
     def _print(self, source, target, tag):
         if source and tag:
-            print self._writeline(doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag))
+            self._writeline(doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag))
