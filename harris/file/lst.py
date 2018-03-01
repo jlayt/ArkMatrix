@@ -89,8 +89,8 @@ class Lst(Formatter):
                 unit = Unit(site, unitId, groupId, Unit.Assigned)
                 project.addUnit(unit)
                 project.matrix.addRelationships(unit.key(), Matrix.Above, below)
-                project.matrix.addRelationships(unit.key(), Matrix.SameAs, equal)
-                project.matrix.addRelationships(unit.key(), Matrix.ContemporaryWith, contemporary)
+                project.matrix.addRelationships(unit.key(), Matrix.Same, equal)
+                project.matrix.addRelationships(unit.key(), Matrix.Contemporary, contemporary)
                 if groupId:
                     project.addSubgrouping(groupId, unitId)
 

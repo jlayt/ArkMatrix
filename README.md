@@ -51,7 +51,7 @@ The advanced format consists of 3 columns, with the third column describing the 
 
 *   above - context in column 1 is above context in column 2
 *   below - context in column 1 is below context in column 2 (converted to above)
-*   sameas - context in column 1 is same as context in column 2
+*   same - context in column 1 is same as context in column 2
 *   contemporary - context in column 1 is contemporary with context in column 2
 *   subgroup - context in column 1 is in subgroup in column 2
 *   group - subgroup in column 1 is in group in column 2

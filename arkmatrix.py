@@ -44,7 +44,7 @@ def getParser():
         "--all", help="Apply full options to processing, i.e. reduce, aggregate, style", action='store_true')
     parser.add_argument("--site", help="Site Code for Matrix", default='')
     parser.add_argument("--name", help="Name for Matrix", default='')
-    parser.add_argument("--sameas", help="Include Same-As relationships in output", action='store_true')
+    parser.add_argument("--same", help="Include Same-As relationships in output", action='store_true')
     parser.add_argument("--orphans", help="Include orphan units in output (format dependent)", action='store_true')
     parser.add_argument("--width", help="Width of node if --style is set", type=float, default=50.0)
     parser.add_argument("--height", help="Height of node if --style is set", type=float, default=25.0)

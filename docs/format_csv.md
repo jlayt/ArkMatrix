@@ -32,7 +32,7 @@ Unit Metadata Tags:
 Relationship Tags:
 * above - unit in column A is above unit in column B
 * below - unit in column A is below unit in column B (use discouraged, prefer using above)
-* sameas - unit in column A is same-as unit in column B
+* same - unit in column A is same-as unit in column B
 * contemporary - unit in column A is contemporary-with unit in column B
 
 Aggregation Tags:
@@ -59,7 +59,7 @@ Example:
 | Unit2     | Unit4     | above        |
 | Unit3     | Unit5     | above        |
 | Unit4     | Unit5     | above        |
-| Unit5     | Unit6     | sameas       |
+| Unit5     | Unit6     | same       |
 | Unit3     | Unit4     | contemporary |
 | Unit1     | Subgroup1 | subgroup     |
 | Unit2     | Subgroup2 | subgroup     |

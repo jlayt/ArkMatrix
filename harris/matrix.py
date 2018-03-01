@@ -39,9 +39,9 @@ class Matrix():
     # Matrix.Relationship enum
     Above = 0
     Below = 1
-    SameAs = 2
-    ContemporaryWith = 3
-    Relationship = ['above', 'below', 'sameas', 'contemporary']
+    Same = 2
+    Contemporary = 3
+    Relationship = ['above', 'below', 'same', 'contemporary']
 
     _strat = None  # DiGraph()
     _same = None  # Graph()
@@ -106,14 +106,14 @@ class Matrix():
         elif reln == Matrix.Below:
             self._strat.add_edge(toUnit, fromUnit)
             return True
-        elif reln == Matrix.SameAs:
+        elif reln == Matrix.Same:
             try:
                 self._contemp.remove_edge(fromUnit, toUnit)
             except:
                 pass
             self._same.add_edge(fromUnit, toUnit)
             return True
-        elif reln == Matrix.ContemporaryWith:
+        elif reln == Matrix.Contemporary:
             try:
                 self._same.remove_edge(fromUnit, toUnit)
             except:
@@ -136,7 +136,7 @@ class Matrix():
         elif reln == Matrix.Below:
             for toUnit in toUnits:
                 self._strat.add_edge(toUnit, fromUnit)
-        elif reln == Matrix.SameAs:
+        elif reln == Matrix.Same:
             for toUnit in toUnits:
                 try:
                     self._contemp.remove_edge(fromUnit, toUnit)
@@ -144,7 +144,7 @@ class Matrix():
                     pass
             toUnits.insert(0, fromUnit)
             self._same.add_star(toUnits)
-        elif reln == Matrix.ContemporaryWith:
+        elif reln == Matrix.Contemporary:
             for toUnit in toUnits:
                 try:
                     self._same.remove_edge(fromUnit, toUnit)
@@ -184,13 +184,13 @@ class Matrix():
                 return True
             except nx.NetworkXError:
                 return False
-        elif reln == Matrix.SameAs:
+        elif reln == Matrix.Same:
             try:
                 self._same.remove_edge(fromUnit, toUnit)
                 return True
             except nx.NetworkXError:
                 return False
-        elif reln == Matrix.ContemporaryWith:
+        elif reln == Matrix.Contemporary:
             try:
                 self._same.remove_edge(fromUnit, toUnit)
                 return True
@@ -204,17 +204,17 @@ class Matrix():
             return self._strat.has_edge(fromUnit, toUnit)
         elif reln == Matrix.Below:
             return self._strat.has_edge(toUnit, fromUnit)
-        elif reln == Matrix.SameAs:
+        elif reln == Matrix.Same:
             return self._same.has_edge(fromUnit, toUnit)
-        elif reln == Matrix.ContemporaryWith:
+        elif reln == Matrix.Contemporary:
             return self._contemp.has_edge(fromUnit, toUnit)
         return False
 
     def relationships(self, reln=None, nbunch=None, data=None, default=None):
         """Returns a list of all relationships of a certain type."""
-        if reln == Matrix.SameAs:
+        if reln == Matrix.Same:
             return self._same.edges_iter(nbunch=nbunch, data=data, default=default)
-        if reln == Matrix.ContemporaryWith:
+        if reln == Matrix.Contemporary:
             return self._contemp.edges_iter(nbunch=nbunch, data=data, default=default)
         return self._strat.edges_iter()
 
@@ -224,9 +224,9 @@ class Matrix():
             return self._strat.predecessors(unit)
         elif reln == Matrix.Below:
             return self._strat.successors(unit)
-        elif reln == Matrix.SameAs:
+        elif reln == Matrix.Same:
             return self._same.neighbours(unit)
-        elif reln == Matrix.ContemporaryWith:
+        elif reln == Matrix.Contemporary:
             return self._contemp.neighbours(unit)
         return sorted(self._strat.successors(unit) + self._strat.predecessors(unit) + self._same.neighbours(unit) + self._contemp.neighbours(unit))
 
@@ -242,13 +242,13 @@ class Matrix():
             return self._strat.successors(unit)
         return []
 
-    def sameAs(self, unit):
+    def same(self, unit):
         """Returns a list of all units the same as a given unit in the matrix"""
         if unit in self._same:
             return self._same.neighbors(unit)
         return []
 
-    def contemporaryWith(self, unit):
+    def contemporary(self, unit):
         """Returns a list of all units contemporary with a given unit in the matrix"""
         if unit in self._contemp:
             return self._contemp.neighbors(unit)
@@ -275,26 +275,26 @@ class Matrix():
         return nx.simple_cycles(self._strat)
 
     def resolve(self):
-        """Resolve all SameAs relationships."""
+        """Resolve all Same relationships."""
         # foreach _same node, pick the lowest number
         # foreach _same node, apply all relns to lowest number, then apply to other nodes
         subgraphs = nx.connected_components(self._same)
         for subgraph in subgraphs:
             subgraph = sorted(subgraph)
-            allSameas = subgraph
+            sames = subgraph
             for unit in subgraph:
-                for sameas in allSameas:
-                    if unit.id() != sameas.id():
-                        self.addRelationship(unit, self.SameAs, sameas)
+                for same in sames:
+                    if unit.id() != same.id():
+                        self.addRelationship(unit, self.Same, same)
             unit = subgraph.pop(0)
-            for sameAs in subgraph:
-                self.addRelationships(unit, self.Below, self.predecessors(sameAs))
-                self.addRelationships(unit, self.Above, self.successors(sameAs))
-                self.addRelationships(unit, self.ContemporaryWith, self.contemporaryWith(sameAs))
-            for sameAs in subgraph:
-                self.addRelationships(sameAs, self.Below, self.predecessors(unit))
-                self.addRelationships(sameAs, self.Above, self.successors(unit))
-                self.addRelationships(sameAs, self.ContemporaryWith, self.contemporaryWith(unit))
+            for same in subgraph:
+                self.addRelationships(unit, self.Below, self.predecessors(same))
+                self.addRelationships(unit, self.Above, self.successors(same))
+                self.addRelationships(unit, self.Contemporary, self.contemporary(same))
+            for same in subgraph:
+                self.addRelationships(same, self.Below, self.predecessors(unit))
+                self.addRelationships(same, self.Above, self.successors(unit))
+                self.addRelationships(same, self.Contemporary, self.contemporary(unit))
 
     def simplify(self, remove=True):
         """Simplify a valid matrix by removing redundant nodes. This transforms the matrix in place."""
@@ -304,11 +304,11 @@ class Matrix():
         for subgraph in subgraphs:
             subgraph = sorted(subgraph)
             unit = subgraph.pop(0)
-            for sameAs in subgraph:
-                redundant.append(sameAs)
+            for same in subgraph:
+                redundant.append(same)
                 if remove:
-                    unit.setLabel(unit.label() + ' = ' + sameAs.label())
-                    self.removeUnit(sameAs)
+                    unit.setLabel(unit.label() + ' = ' + same.label())
+                    self.removeUnit(same)
         return redundant
 
     def redundantUnits(self):
