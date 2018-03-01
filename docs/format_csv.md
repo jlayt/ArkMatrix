@@ -8,6 +8,7 @@ The simple relationship format consists of two columns representing an Above rel
 
 Example:
 
+|-------|-------|
 | Unit1 | Unit2 |
 | Unit2 | Unit3 |
 | Unit2 | Unit4 |
@@ -23,6 +24,7 @@ File Metadata Tags:
 * dataset
 
 Unit Metadata Tags:
+* label
 * status = allocated | assigned | void
 * type = undefined | deposit | fill | cut | masonry | skeleton | timber
 
@@ -43,6 +45,7 @@ Other tags may be included in the file, such as 'description' or 'location', but
 
 Example:
 
+|-----------|-----------|--------------|
 | MNO12     |           | site         |
 | Area A    |           | dataset      |
 | Unit1     | assigned  | status       |
