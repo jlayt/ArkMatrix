@@ -24,6 +24,7 @@
 from harris.matrix import Matrix
 from harris.unit import Unit
 
+
 class Project():
 
     _dataset = ''
@@ -168,16 +169,16 @@ class Project():
         self._matrices[unitClass].reduce()
         return self._matrices[unitClass]
 
-    def redundant(self):
-        return self._matrices[Unit.Context].redundant()
+    def redundantUnits(self):
+        return self._matrices[Unit.Context].redundantUnits()
+
+    def redundantRelationships(self):
+        return self._matrices[Unit.Context].redundantRelationships()
 
     def resolve(self):
-        self._matrices[Unit.Context].resolveSameAs()
+        self._matrices[Unit.Context].resolve()
 
     def reduce(self):
-        redundant = self._matrices[Unit.Context].redundantSameAs()
-        for unit in redundant:
-            self.removeUnit(unit)
         return self._matrices[Unit.Context].reduce()
 
     def aggregate(self):
@@ -185,3 +186,8 @@ class Project():
         for unitClass in range(Unit.Subgroup, Unit.Landuse):
             self.generateAggregateMatrix(unitClass)
         return removed
+
+    def simplify(self):
+        redundant = self._matrices[Unit.Context].simplify()
+        for unit in redundant:
+            self.removeUnit(unit)

@@ -33,6 +33,7 @@ to add cycles and self-cycles. Matrices must be validated and reduced after
 new edges have been added.
 """
 
+
 class Matrix():
 
     # Matrix.Relationship enum
@@ -42,9 +43,9 @@ class Matrix():
     ContemporaryWith = 3
     Relationship = ['above', 'below', 'sameas', 'contemporary']
 
-    _strat = None # DiGraph()
-    _same = None # Graph()
-    _contemp = None # Graph()
+    _strat = None  # DiGraph()
+    _same = None  # Graph()
+    _contemp = None  # Graph()
 
     def __init__(self):
         self._strat = nx.DiGraph()
@@ -87,7 +88,7 @@ class Matrix():
 
     def count(self):
         """Counts the relationships"""
-        return self._strat.number_of_edges() +  self._same.number_of_edges() + self._contemp.number_of_edges()
+        return self._strat.number_of_edges() + self._same.number_of_edges() + self._contemp.number_of_edges()
 
     def addRelationship(self, fromUnit, reln, toUnit):
         """
@@ -209,15 +210,15 @@ class Matrix():
             return self._contemp.has_edge(fromUnit, toUnit)
         return False
 
-    def relationships(self, reln=None, nbunch = None, data = None, default = None):
+    def relationships(self, reln=None, nbunch=None, data=None, default=None):
         """Returns a list of all relationships of a certain type."""
         if reln == Matrix.SameAs:
-            return self._same.edges_iter(nbunch = nbunch, data = data, default = default)
+            return self._same.edges_iter(nbunch=nbunch, data=data, default=default)
         if reln == Matrix.ContemporaryWith:
-            return self._contemp.edges_iter(nbunch = nbunch, data = data, default = default)
+            return self._contemp.edges_iter(nbunch=nbunch, data=data, default=default)
         return self._strat.edges_iter()
 
-    def related(self, unit, reln = None):
+    def related(self, unit, reln=None):
         """Returns a list of all units related to a unit, optionally for a certain relationship type."""
         if reln == Matrix.Above:
             return self._strat.predecessors(unit)
@@ -273,7 +274,7 @@ class Matrix():
         """Returns a list of any cycles in the matrix."""
         return nx.simple_cycles(self._strat)
 
-    def resolveSameAs(self):
+    def resolve(self):
         """Resolve all SameAs relationships."""
         # foreach _same node, pick the lowest number
         # foreach _same node, apply all relns to lowest number, then apply to other nodes
@@ -295,8 +296,8 @@ class Matrix():
                 self.addRelationships(sameAs, self.Above, self.successors(unit))
                 self.addRelationships(sameAs, self.ContemporaryWith, self.contemporaryWith(unit))
 
-    def redundantSameAs(self):
-        """Return a list of redundant SameAs units."""
+    def simplify(self, remove=True):
+        """Simplify a valid matrix by removing redundant nodes. This transforms the matrix in place."""
         # foreach _same node, pick the lowest number to keep, the rest can be removed
         subgraphs = nx.connected_components(self._same)
         redundant = []
@@ -304,9 +305,15 @@ class Matrix():
             subgraph = sorted(subgraph)
             unit = subgraph.pop(0)
             for sameAs in subgraph:
-                unit.setLabel(unit.label() + ' = ' + sameAs.label())
                 redundant.append(sameAs)
+                if remove:
+                    unit.setLabel(unit.label() + ' = ' + sameAs.label())
+                    self.removeUnit(sameAs)
         return redundant
+
+    def redundantUnits(self):
+        """Return a list of redundant units."""
+        return self.simplify(False)
 
     def reduce(self, remove=True):
         """Reduces a valid matrix by removing redundant edges. This transforms the matrix in place."""
@@ -328,7 +335,7 @@ class Matrix():
                                 self._strat.remove_edge(root, toUnit)
         return edges
 
-    def redundant(self):
+    def redundantRelationships(self):
         """Returns a list of any redundant edges without removing them."""
         return self.reduce(False)
 

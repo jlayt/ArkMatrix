@@ -117,7 +117,7 @@ def process(infile, outfile, options):
         sys.stdout.write('\n\nProcessed Matrix:\n\n')
         if options['aggregate']:
             redundant = project.aggregate()
-            writeRelationships(redundant)
+            writeRelationships('  Redundant Relationships: ', redundant)
             writeProjectInfo(project.info())
             for unitClass in range(Unit.Subgroup, Unit.Landuse):
                 if project.matrix(unitClass).count() > 0:
@@ -125,11 +125,11 @@ def process(infile, outfile, options):
                     writeMatrixInfo(project.matrix(unitClass).info())
         elif options['reduce']:
             redundant = project.reduce()
-            writeRelationships(redundant)
+            writeRelationships('  Redundant Relationships: ', redundant)
             writeProjectInfo(project.info())
         else:
             redundant = project.redundant()
-            writeRelationships(redundant)
+            writeRelationships('  Redundant Relationships: ', redundant)
     else:
         sys.stdout.write('\n\nInvalid Matrix\n\n')
         for unitClass in range(Unit.Context, Unit.Landuse):
@@ -204,8 +204,8 @@ def writeMatrixInfo(info):
     sys.stdout.write(out)
 
 
-def writeRelationships(relationships):
-    sys.stdout.write('  Redundant Relationships: ' + str(len(relationships)) + '\n')
+def writeRelationships(text, relationships):
+    sys.stdout.write(text + str(len(relationships)) + '\n')
     for edge in relationships:
         sys.stdout.write('    ' + str(edge[0]) + ' above ' + str(edge[1]) + '\n')
     sys.stdout.write('\n')
