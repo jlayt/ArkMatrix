@@ -37,12 +37,12 @@ def getParser():
                         choices=['lst', 'csv'])
     parser.add_argument("-v", "--validate", help="Only validate the input file, don't process", action='store_false')
     parser.add_argument("-g", "--graph", help="Output a graph in the chosen format",
-                        choices=['none', 'gv', 'dot', 'gml', 'graphml', 'gxl', 'tgf'])
+                        choices=['gv', 'dot', 'gml', 'graphml', 'gxl', 'tgf'])
     parser.add_argument("--site", help="Site Code for Matrix", default='')
     parser.add_argument("--name", help="Name for Matrix", default='')
-    parser.add_argument("--nostyle", help="Don't include style formatting in graph", action='store_false')
+    parser.add_argument("--nostyle", help="Don't include style formatting in graph", action='store_true')
     parser.add_argument("--same", help="Include Same-As units/relationships in graph", action='store_false')
-    parser.add_argument("--orphan", help="Include orphan units in graph (format dependent)", action='store_false')
+    parser.add_argument("--orphans", help="Include orphan units in graph (format dependent)", action='store_false')
     parser.add_argument("--width", help="Width of graph node", type=float, default=50.0)
     parser.add_argument("--height", help="Height of graph node", type=float, default=25.0)
     parser.add_argument("--basename", help="Base filename for file output", default='')
@@ -55,13 +55,11 @@ def getOptions(args):
     options = vars(args)
 
     if args.infile and args.infile.name != '<stdin>':
-        infile = args.infile
-        basename, suffix = os.path.splitext(infile.name)
+        basename, suffix = os.path.splitext(args.infile.name)
         if not options['basename']:
             options['basename'] = basename
         options['input'] = suffix.strip('.').lower()
     else:
-        infile = sys.stdin
         if not options['basename']:
             if options['site']:
                 options['basename'] = options['site']
@@ -73,13 +71,17 @@ def getOptions(args):
             options['input'] = 'csv'
 
     if args.outfile and args.outfile.name != '<stdout>':
-        outfile = args.outfile
+        basename, suffix = os.path.splitext(args.outfile.name)
+        if not options['basename']:
+            options['basename'] = basename
+        options['input'] = suffix.strip('.').lower()
+
         basename, suffix = os.path.splitext(args.outfile.name)
         options['output'] = 'csv'
         options['outpath'] = os.path.dirname(args.outfile.name)
         options['outname'] = basename
-    else:
-        outfile = sys.stdout
+
+    options['style'] = not options['nostyle']
 
     if options['output']:
         options['output'] = options['output'].lower()
@@ -129,36 +131,22 @@ def process(infile, outfile, options):
                 sys.stdout.write(out)
         sys.stdout.write('\n')
 
-    if options['graph'] != 'none':
-        formatter = Format.createFormat(options['graph'])
-        for unitClass in range(Unit.Context, Unit.Landuse):
-            if project.matrix(unitClass).count() > 0:
-                if not outfile:
-                    name = options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
-                    outfile = open(name, 'w')
-                formatter.write(outfile, project, unitClass, options)
-            if outfile and outfile != sys.stdout:
-                outfile.close()
-                outfile = None
-        if outfile and outfile != sys.stdout:
-            outfile.close()
+    formatter.write(outfile, project, Unit.Context, options)
+    if options['graph'] is not None:
+        writeGraphFile(project, options['graph'], options)
 
     sys.stdout.write('\n')
 
 
-def writeGraphFile(project, format, options):
-    formatter = Format.createFormat(format)
+def writeGraphFile(project, graph, options):
+    formatter = Format.createFormat(graph)
     for unitClass in range(Unit.Context, Unit.Landuse):
         if project.matrix(unitClass).count() > 0:
-            if not outfile:
-                name = options['outname'] + '_' + Unit.Class[unitClass] + '.' + options['output']
-                outfile = open(name, 'w')
+            name = options['outname'] + '_' + Unit.Class[unitClass] + '.' + graph
+            outfile = open(name, 'w')
             formatter.write(outfile, project, unitClass, options)
-        if outfile and outfile != sys.stdout:
             outfile.close()
             outfile = None
-    if outfile and outfile != sys.stdout:
-        outfile.close()
 
 
 def writeProjectInfo(info):

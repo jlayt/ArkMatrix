@@ -38,22 +38,27 @@ class Gml(Formatter):
         self._file = outfile
         self._writeHeader()
 
+        aggregate = options.get('aggregate', False)
+        style = options.get('style', True)
+        width = options.get('width', 50)
+        height = options.get('height', 25)
+
         for unit in project.units(unitClass):
-            if options['aggregate'] and unit.aggregate():
+            if aggregate and unit.aggregate():
                 gid = unit.aggregate().node()
             else:
                 gid = ''
 
-            self._writeNode(unit.node(), unit.id(), unit.label(), gid, options['style'], options['width'], options['height'])
+            self._writeNode(unit.node(), unit.id(), unit.label(), gid, style, width, height)
 
         eid = 0
         for edge in project.matrix(Unit.Context).relationships():
             frm = edge[0]
             to = edge[1]
-            self._writeEdge(eid, edge[0].node(), edge[1].node(), options['style'])
+            self._writeEdge(eid, edge[0].node(), edge[1].node(), style)
             eid += 1
 
-        if options['aggregate']:
+        if aggregate:
             for unit in project.units(Unit.Subgroup):
                 self._writeAggregate(unit.node(), unit.id(), 'Subgroup')
 
