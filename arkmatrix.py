@@ -123,12 +123,18 @@ def process(infile, outfile, options):
                 sys.stdout.write('\n\n' + Unit.Class[unitClass].title() + ' Matrix:\n\n')
                 writeMatrixInfo(project.matrix(unitClass).info())
     else:
-        sys.stdout.write('\n\nInvalid Matrix\n\n')
+        sys.stdout.write('\n\nInvalid Matrix\n')
+
         for unitClass in range(Unit.Context, Unit.Landuse):
-            for cycle in project.matrix(unitClass).cycles():
-                out = 'Cycle: '
-                out += str(map(str, cycle)) + '\n'
-                sys.stdout.write(out)
+            sys.stdout.write('\nErrors in ' + Unit.Class[unitClass] + ' matrix' + '\n\n')
+            duplicates = project.matrix(unitClass).duplicates()
+            sys.stdout.write('  Cylic Same-As Relationships: ' + str(len(duplicates)) + '\n')
+            for edge in duplicates:
+                sys.stdout.write('    Same-As: ' + str(map(str, edge)) + '\n')
+            cycles = project.matrix(unitClass).cycles()
+            sys.stdout.write('\n  Cylic Above/Below Relationships: ' + '\n') # + str(len(cycles))
+            for cycle in cycles:
+                sys.stdout.write('    Cycle: ' + str(map(str, cycle)) + '\n')
         sys.stdout.write('\n')
 
     formatter.write(outfile, project, Unit.Context, options)

@@ -274,6 +274,14 @@ class Matrix():
         """Returns a list of any cycles in the matrix."""
         return nx.simple_cycles(self._strat)
 
+    def duplicates(self):
+        """Returns a list of any strat edges duplicated in the same edges."""
+        duplicates = []
+        for same in self._same.edges_iter():
+            if self._strat.has_edge(same[0], same[1]) or self._strat.has_edge(same[1], same[0]):
+                duplicates.append(same)
+        return duplicates
+
     def resolve(self):
         """Resolve all Same relationships."""
         # foreach _same node, pick the lowest number
