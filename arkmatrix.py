@@ -139,6 +139,7 @@ def process(infile, outfile, options):
 
     formatter.write(outfile, project, Unit.Context, options)
     if options['graph'] is not None:
+        project.simplify()
         writeGraphFile(project, options['graph'], options)
 
     sys.stdout.write('\n')

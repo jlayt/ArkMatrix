@@ -316,7 +316,7 @@ class Matrix():
                 redundant.append(same)
                 if remove:
                     unit.setLabel(unit.label() + ' = ' + same.label())
-                    self.removeUnit(same)
+                    #self.removeUnit(same)
         return redundant
 
     def redundantUnits(self):
