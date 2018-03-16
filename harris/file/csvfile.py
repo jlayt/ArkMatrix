@@ -118,7 +118,7 @@ class Csv(Formatter):
             for unit in project.units(childClass):
                 aggregate = unit.aggregate()
                 if aggregate is not None:
-                    self._print(unit.id(), aggregate.id(), Unit.Class(aggrgate.unitClass()))
+                    self._print(unit.id(), aggregate.id(), Unit.Class[aggregate.unitClass()])
         self._file = None
 
     def _print(self, source, target, tag):
