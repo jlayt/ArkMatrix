@@ -209,10 +209,10 @@ class Matrix(object):
     def relationships(self, reln=None, nbunch=None, data=None, default=None):
         """Returns a list of all relationships of a certain type."""
         if reln == Matrix.Same:
-            return self._same.edges_iter(nbunch=nbunch, data=data, default=default)
+            return self._same.edges(nbunch=nbunch, data=data, default=default)
         if reln == Matrix.Contemporary:
-            return self._contemp.edges_iter(nbunch=nbunch, data=data, default=default)
-        return self._strat.edges_iter()
+            return self._contemp.edges(nbunch=nbunch, data=data, default=default)
+        return self._strat.edges()
 
     def related(self, unit, reln=None):
         """Returns a list of all units related to a unit, optionally for a certain relationship type."""
@@ -273,7 +273,7 @@ class Matrix(object):
     def duplicates(self):
         """Returns a list of any strat edges duplicated in the same edges."""
         duplicates = []
-        for same in self._same.edges_iter():
+        for same in self._same.edges():
             if self._strat.has_edge(same[0], same[1]) or self._strat.has_edge(same[1], same[0]):
                 duplicates.append(same)
         return duplicates
@@ -327,7 +327,7 @@ class Matrix(object):
             return edges
         # Transitive reduction algorithm found on StackOverflow, algorithm originally from GraphViz tred
         # http://stackoverflow.com/questions/17078696/im-trying-to-perform-the-transitive-reduction-of-directed-graph-in-python
-        for root in self._strat.nodes_iter():
+        for root in self._strat.nodes():
             for gen1 in self._strat.successors(root):
                 # Skip the direct children, look at every grandchild instead
                 for gen2 in self._strat.successors(gen1):
@@ -364,7 +364,7 @@ class Matrix(object):
             return self._strat[fromUnit][toUnit]['weight']
 
     def weightForDegree(self):
-        for edge in self._strat.edges_iter():
+        for edge in self._strat.edges():
             weight = 1
             if self._strat.out_degree(edge[0]) == 1:
                 weight += 2
