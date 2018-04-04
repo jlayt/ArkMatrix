@@ -23,7 +23,8 @@
 
 import itertools
 
-class Unit():
+
+class Unit(object):
 
     # Unit.Class enum
     Context = 0
@@ -46,34 +47,30 @@ class Unit():
     Allocated = 0
     Assigned = 1
     Void = 2
-    Status = ['allocated', 'assigned', 'void'];
+    Status = ['allocated', 'assigned', 'void']
 
-    # Counter for unique Node IDs
+    # Counter for globally unique Node IDs
     _counter = itertools.count()
-    # Node ID, unique over all unit types
-    _nid = None
-    _siteCode = ''
-    # ID, unique within unit type and site code
-    _id = ''
-    # Key, composed of Site Code, and ID, unique within unit type
-    _key = ''
-    _class = Context # Unit.Class
-    _type = Undefined # Unit.Type
-    _status = Allocated # Unit.Status
-    _label = None
-    _aggregate = None
 
-    def __init__(self, siteCode, unitId, unitClass = Context, unitType = Undefined, unitStatus = Allocated):
+    def __init__(self, siteCode, unitId, unitClass=Context, unitType=Undefined, unitStatus=Allocated):
+        # Node ID, unique over all unit types
         self._nid = Unit._counter.next()
         self._siteCode = siteCode
+        # ID, unique within unit type and site code
         self._id = str(unitId)
+        # Key, composed of Site Code, and ID, unique within unit type
         if siteCode:
             self._key = siteCode + '_' + self._id
         else:
             self._key = self._id
+        # Unit.Class
         self._class = unitClass
+        # Unit.Type
         self._type = unitType
+        # Unit.Status
         self._status = unitStatus
+        self._label = None
+        self._aggregate = None
 
     def __str__(self):
         return self._key

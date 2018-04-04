@@ -26,9 +26,11 @@ from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
+
 class GraphML(Formatter):
 
     def __init__(self):
+        super(GraphML, self).__init__()
         self._read = False
         self._write = True
 
@@ -38,7 +40,7 @@ class GraphML(Formatter):
         self._writeline('<?xml version="1.0" encoding="UTF-8"?>')
 
         if options['style']:
-            #yEd support
+            # yEd support
             self._writeline('<graphml xmlns="http://graphml.graphdrawing.org/xmlns"')
             self._writeline('         xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"')
             self._writeline('         xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"')
@@ -46,7 +48,8 @@ class GraphML(Formatter):
             self._writeline('         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             self._writeline('         xmlns:y="http://www.yworks.com/xml/graphml"')
             self._writeline('         xmlns:yed="http://www.yworks.com/xml/yed/3"')
-            self._writeline('         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">')
+            self._writeline(
+                '         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">')
             self._writeline('    <key for="node" id="d5" yfiles.type="nodegraphics"/>')
             self._writeline('    <key for="edge" id="d9" yfiles.type="edgegraphics"/>')
         else:
@@ -61,13 +64,15 @@ class GraphML(Formatter):
                 self._writeline('        <node id=' + doublequote(unit.id()) + '>')
                 self._writeline('            <port name="North"/>')
                 self._writeline('            <port name="South"/>')
-                #yEd support
+                # yEd support
                 self._writeline('            <data key="d5">')
                 self._writeline('                <y:ShapeNode>')
-                self._writeline('                    <y:Geometry height="' + str(options['height']) + '" width="' + str(options['width']) + '"/>')
+                self._writeline('                    <y:Geometry height="' +
+                                str(options['height']) + '" width="' + str(options['width']) + '"/>')
                 self._writeline('                    <y:Fill hasColor="false" transparent="false"/>')
                 self._writeline('                    <y:BorderStyle color="#000000" type="line" width="1.0"/>')
-                self._writeline('                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.label()) + '</y:NodeLabel>')
+                self._writeline(
+                    '                    <y:NodeLabel alignment="center" autoSizePolicy="content" visible="true">' + str(unit.label()) + '</y:NodeLabel>')
                 self._writeline('                    <y:Shape type="rectangle"/>')
                 self._writeline('                </y:ShapeNode>')
                 self._writeline('            </data>')
@@ -77,7 +82,8 @@ class GraphML(Formatter):
 
         eid = 0
         for edge in project.matrix(unitClass).relationships():
-            out = '        <edge id=' + doublequote(eid) + ' source=' + doublequote(edge[0].id()) + ' target=' + doublequote(edge[1].id())
+            out = '        <edge id=' + doublequote(eid) + ' source=' + \
+                doublequote(edge[0].id()) + ' target=' + doublequote(edge[1].id())
             if options['style']:
                 out += ' sourceport="South" targetport="North"/>'
             else:

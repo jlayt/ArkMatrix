@@ -28,9 +28,11 @@ from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
+
 class Gml(Formatter):
 
     def __init__(self):
+        super(Gml, self).__init__()
         self._read = False
         self._write = True
 

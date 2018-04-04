@@ -24,16 +24,18 @@
 from harris.file.formatter import Formatter
 from harris.unit import Unit
 
+
 class Tgf(Formatter):
 
     def __init__(self):
+        super(Tgf, self).__init__()
         self._read = False
         self._write = True
 
     def write(self, project, options):
         for unit in project.units(Unit.Context):
-            print str(unit.key())  + ' ' + str(unit.id())
+            print str(unit.key()) + ' ' + str(unit.id())
         print '#'
         for unit in project.units(Unit.Context):
             for successor in project.matrix(Unit.Context).successors():
-                print str(unit.key())  + ' ' + str(successor.key())
+                print str(unit.key()) + ' ' + str(successor.key())

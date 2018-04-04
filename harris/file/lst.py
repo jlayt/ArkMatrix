@@ -27,16 +27,18 @@ from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
+
 class Lst(Formatter):
 
     # Temp default site code
     _siteCode = ''
 
     def __init__(self):
+        super(Lst, self).__init__()
         self._read = True
         self._write = False
 
-    def read(self, infile, dataset = '', siteCode = ''):
+    def read(self, infile, dataset='', siteCode=''):
         project = Project(dataset, siteCode)
         line = infile.readline().strip()
         project.dataset = line.strip()[len('Stratigraphic Dataset'):].strip()

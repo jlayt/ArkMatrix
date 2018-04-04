@@ -29,67 +29,69 @@ from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
+
 class Csv(Formatter):
 
     def __init__(self):
+        super(Csv, self).__init__()
         self._read = True
         self._write = True
 
-    def read(self, infile, dataset = '', siteCode = ''):
+    def read(self, infile, dataset='', siteCode=''):
         project = Project(dataset, siteCode)
         reader = csv.reader(infile)
         prevTarget = None
         for record in reader:
-            #try:
-                source = str(record[0])
-                target = str(record[1])
-                if len(record) >= 3:
-                    tag = str(record[2])
-                else:
-                    tag = 'above'
-                if tag == 'site':
-                    project.setSiteCode(source)
-                    continue
-                if tag == 'dataset':
-                    project.setDataset(source)
-                    continue
-                if tag == 'type':
-                    if target in Unit.Type:
-                        unit = self._unit(project, source, Unit.Context)
-                        unit.setType(Unit.Class.index(target))
-                    continue
-                if tag == 'status':
-                    if source and target in Unit.Status:
-                        # TODO Status of subgroup/group/landuse?
-                        unit = self._unit(project, source, Unit.Context)
-                        unit.setStatus(Unit.Status.index(target))
-                    continue
-                if tag == 'label':
-                    if source and target:
-                        unit = self._unit(project, source, Unit.Context)
-                        unit.setLabel(target)
-                    continue
-                if tag == 'group':
-                    if source and target:
-                        subgroup = self._unit(project, source, Unit.Subgroup)
-                        group = self._unit(project, target, Unit.Group)
-                        project.addAggregate(subgroup, group)
-                elif tag == 'subgroup':
-                    if source and target:
-                        context = self._unit(project, source, Unit.Context)
-                        subgroup = self._unit(project, target, Unit.Subgroup)
-                        project.addAggregate(context, subgroup)
-                elif tag in Matrix.Relationship:
-                    if not source:
-                        source = prevTarget
-                    prevTarget = target
-                    if source and target:
-                        source = self._unit(project, source, Unit.Context)
-                        target = self._unit(project, target, Unit.Context)
-                        project.addRelationship(source, Matrix.Relationship.index(tag), target)
-            #except:
-                #if record:
-                    #print 'Error reading row: ' + str(record)
+            # try:
+            source = str(record[0])
+            target = str(record[1])
+            if len(record) >= 3:
+                tag = str(record[2])
+            else:
+                tag = 'above'
+            if tag == 'site':
+                project.setSiteCode(source)
+                continue
+            if tag == 'dataset':
+                project.setDataset(source)
+                continue
+            if tag == 'type':
+                if target in Unit.Type:
+                    unit = self._unit(project, source, Unit.Context)
+                    unit.setType(Unit.Class.index(target))
+                continue
+            if tag == 'status':
+                if source and target in Unit.Status:
+                    # TODO Status of subgroup/group/landuse?
+                    unit = self._unit(project, source, Unit.Context)
+                    unit.setStatus(Unit.Status.index(target))
+                continue
+            if tag == 'label':
+                if source and target:
+                    unit = self._unit(project, source, Unit.Context)
+                    unit.setLabel(target)
+                continue
+            if tag == 'group':
+                if source and target:
+                    subgroup = self._unit(project, source, Unit.Subgroup)
+                    group = self._unit(project, target, Unit.Group)
+                    project.addAggregate(subgroup, group)
+            elif tag == 'subgroup':
+                if source and target:
+                    context = self._unit(project, source, Unit.Context)
+                    subgroup = self._unit(project, target, Unit.Subgroup)
+                    project.addAggregate(context, subgroup)
+            elif tag in Matrix.Relationship:
+                if not source:
+                    source = prevTarget
+                prevTarget = target
+                if source and target:
+                    source = self._unit(project, source, Unit.Context)
+                    target = self._unit(project, target, Unit.Context)
+                    project.addRelationship(source, Matrix.Relationship.index(tag), target)
+            # except:
+            # if record:
+                #print 'Error reading row: ' + str(record)
         return project
 
     def _unit(self, project, unitId, unitClass):
@@ -123,4 +125,4 @@ class Csv(Formatter):
 
     def _print(self, source, target, tag):
         if source and tag:
-            self._writeline(doublequote(source)  + ',' + doublequote(target)  + ',' + doublequote(tag))
+            self._writeline(doublequote(source) + ',' + doublequote(target) + ',' + doublequote(tag))

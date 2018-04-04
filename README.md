@@ -34,16 +34,17 @@ ArkMatrix is run from the command line.
 
 *   Run 'python arkmatrix.py --help' to see the available options
 *   ArkMatrix will guess the file formats from the file suffixes
-*   The matrix will only be reduced if you set the --reduce or -r flag and the matrix is valid
-*   The subgroup and group matrices will only be generated if you set the --group or -g flag and the matrix is valid.
+*   The output matrix will always be fully processed unless you set the --validate or -v flag to only validate
 
 To generate a graphical version of smaller matrices, install yEd <https://www.yworks.com/products/yed>.
 
-*   Run 'python arkmatrix.py -r -s mysite.csv mysite.gml'
+*   Run 'python arkmatrix.py --graph gml mysite.csv mysite_reduced.csv'
 *   Open mysite.gml in yEd
-*   Choose Layout > Hierarchical and click OK
+*   Choose Layout > Hierarchical, customise the settings for orthogonal grouped edges and click OK
 
 ## CSV Format
+
+ArkMatrix supports a CSV formats as documented at  <https://github.com/lparchaeology/ArkMatrix/blob/master/docs/format_csv.md>.
 
 The simple CSV format consists of two columns representing a stratigraphic relationship between two contexts, the first column being above, the second column being below. If column 1 is left empty, then the previous value in column 2 is used as the above value (see <https://github.com/lparchaeology/ArkMatrix/blob/master/test/csv_simple.csv> for an example).
 

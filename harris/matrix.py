@@ -34,7 +34,7 @@ new edges have been added.
 """
 
 
-class Matrix():
+class Matrix(object):
 
     # Matrix.Relationship enum
     Above = 0
@@ -42,10 +42,6 @@ class Matrix():
     Same = 2
     Contemporary = 3
     Relationship = ['above', 'below', 'same', 'contemporary']
-
-    _strat = None  # DiGraph()
-    _same = None  # Graph()
-    _contemp = None  # Graph()
 
     def __init__(self):
         self._strat = nx.DiGraph()
@@ -316,7 +312,7 @@ class Matrix():
                 redundant.append(same)
                 if remove:
                     unit.setLabel(unit.label() + ' = ' + same.label())
-                    #self.removeUnit(same)
+                    # self.removeUnit(same)
         return redundant
 
     def redundantUnits(self):

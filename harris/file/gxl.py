@@ -26,9 +26,11 @@ from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
+
 class Gxl(Formatter):
 
     def __init__(self):
+        super(Gxl, self).__init__()
         self._read = False
         self._write = True
 
@@ -47,7 +49,8 @@ class Gxl(Formatter):
         for edge in project.matrix(Unit.Context).relationships():
             frm = edge[0]
             to = edge[1]
-            print '        <edge id=' + doublequote(eid)+ ' from="' + doublequote(edge[0].id()) + ' to=' + doublequote(edge[1].id()) + '/>'
+            print '        <edge id=' + doublequote(eid) + ' from="' + \
+                doublequote(edge[0].id()) + ' to=' + doublequote(edge[1].id()) + '/>'
             eid += 1
 
         print '    </graph>'

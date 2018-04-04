@@ -59,7 +59,7 @@ Example:
 | Unit2     | Unit4     | above        |
 | Unit3     | Unit5     | above        |
 | Unit4     | Unit5     | above        |
-| Unit5     | Unit6     | same       |
+| Unit5     | Unit6     | same         |
 | Unit3     | Unit4     | contemporary |
 | Unit1     | Subgroup1 | subgroup     |
 | Unit2     | Subgroup2 | subgroup     |

@@ -21,11 +21,13 @@
  ***************************************************************************/
 """
 
-class Formatter():
 
-    _read = False
-    _write = False
-    _file = None
+class Formatter(object):
+
+    def __init__(self):
+        self._read = False
+        self._write = False
+        self._file = None
 
     def canRead(self):
         return self._read
@@ -33,7 +35,7 @@ class Formatter():
     def canWrite(self):
         return self._write
 
-    def read(self, infile, dataset = '', siteCode = ''):
+    def read(self, infile, dataset='', siteCode=''):
         return
 
     def write(self, outfile, project, unitClass, options):

@@ -26,9 +26,11 @@ from harris.unit import Unit
 from harris.matrix import Matrix
 from harris.utilities import *
 
+
 class Gv(Formatter):
 
     def __init__(self):
+        super(Gv, self).__init__()
         self._read = False
         self._write = True
 
@@ -36,13 +38,13 @@ class Gv(Formatter):
         print 'digraph ' + project.dataset.replace(' ', '_') + ' {'
         if options['style']:
             project.matrix.weightForDegree()
-            print '    splines=polyline' # Should be ortho but ports support not implemented
+            print '    splines=polyline'  # Should be ortho but ports support not implemented
             print '    concentrate=true'
             print '    ranksep="1.0 equally"'
             print '    nodesep="2.0 equally"'
             print '    node [shape=box]'
-            print '    edge [arrowhead=none headport=n tailport=s width=' + str(options['width']) + ' height=' + str(options['height']) + ']'
-
+            print '    edge [arrowhead=none headport=n tailport=s width=' + \
+                str(options['width']) + ' height=' + str(options['height']) + ']'
 
         for edge in project.matrix(Unit.Context).relationships(data='weight', default=1):
             out = '    ' + doublequote(edge[0].id()) + ' -> ' + doublequote(edge[1].id())

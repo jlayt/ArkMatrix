@@ -29,6 +29,7 @@ from harris.file.gxl import Gxl
 from harris.file.lst import Lst
 from harris.file.tgf import Tgf
 
+
 class Format():
 
     @staticmethod

@@ -25,24 +25,21 @@ from harris.matrix import Matrix
 from harris.unit import Unit
 
 
-class Project():
-
-    _dataset = ''
-    _siteCode = ''
-    _units = {}
-    _aggregates = {}
-    _matrices = {}
+class Project(object):
 
     def __init__(self, dataset='', siteCode=''):
         self._dataset = dataset
         self._siteCode = siteCode
+        self._units = {}
         self._units[Unit.Context] = {}
         self._units[Unit.Subgroup] = {}
         self._units[Unit.Group] = {}
         self._units[Unit.Landuse] = {}
+        self._aggregates = {}
         self._aggregates[Unit.Subgroup] = {}
         self._aggregates[Unit.Group] = {}
         self._aggregates[Unit.Landuse] = {}
+        self._matrices = {}
         self._matrices[Unit.Context] = Matrix()
         self._matrices[Unit.Subgroup] = Matrix()
         self._matrices[Unit.Group] = Matrix()

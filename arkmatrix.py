@@ -132,7 +132,7 @@ def process(infile, outfile, options):
             for edge in duplicates:
                 sys.stdout.write('    Same-As: ' + str(map(str, edge)) + '\n')
             cycles = project.matrix(unitClass).cycles()
-            sys.stdout.write('\n  Cylic Above/Below Relationships: ' + '\n') # + str(len(cycles))
+            sys.stdout.write('\n  Cylic Above/Below Relationships: ' + '\n')  # + str(len(cycles))
             for cycle in cycles:
                 sys.stdout.write('    Cycle: ' + str(map(str, cycle)) + '\n')
         sys.stdout.write('\n')
