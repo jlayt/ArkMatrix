@@ -74,12 +74,11 @@ def getOptions(args):
         basename, suffix = os.path.splitext(args.outfile.name)
         if not options['basename']:
             options['basename'] = basename
-        options['input'] = suffix.strip('.').lower()
-
-        basename, suffix = os.path.splitext(args.outfile.name)
-        options['output'] = 'csv'
         options['outpath'] = os.path.dirname(args.outfile.name)
         options['outname'] = basename
+        options['output'] = suffix.strip('.').lower()
+    else:
+        options['output'] = 'csv'
 
     options['style'] = not options['nostyle']
 
@@ -104,6 +103,9 @@ def getOptions(args):
 def process(infile, outfile, options):
     formatter = Format.createFormat(options['input'])
     project = formatter.read(infile, options['name'], options['site'])
+    if project is None:
+        sys.stdout.write('\nInvalid Input: failed to parse a valid input file\n\n')
+        return
     project.resolve()
 
     sys.stdout.write('\nOriginal Matrix:\n\n')

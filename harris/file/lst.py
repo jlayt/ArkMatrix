@@ -54,20 +54,20 @@ class Lst(Formatter):
         contemporary = []
         equal = []
         below = []
-        unit = 'context'
+        unitClass = Unit.Context
         for line in infile:
             if (line.strip() == ''):
                 pass
             elif (not line.startswith(' ')):
                 if unitId:
-                    self._addUnit(project, unit, site, unitId, groupId, above, below, contemporary, equal)
+                    self._addUnit(project, unitClass, site, unitId, groupId, above, below, contemporary, equal)
                 site, unitId = self._lstNameToUnit(line.strip())
                 groupId = ''
                 above = []
                 contemporary = []
                 equal = []
                 below = []
-                unit = 'context'
+                unitClass = Unit.Context
             else:
                 attribute = line.strip()
                 if (attribute.lower().startswith('above:')):
@@ -81,18 +81,26 @@ class Lst(Formatter):
                 elif (attribute.lower().startswith('part of:')):
                     groupId = attribute[len('part of:'):].strip()
                 elif (attribute.lower().startswith('unit class:')):
-                    unit = attribute[len('unit class:'):].strip()
+                    unitClass = attribute[len('unit class:'):].strip()
+                    unitClass = Unit.Class.index(unitClass)
 
-        self._addUnit(project, unit, site, unitId, groupId, above, below, contemporary, equal)
+        self._addUnit(project, unitClass, site, unitId, groupId, above, below, contemporary, equal)
+        return project
 
-    def _addUnit(self, project, unit, site, unitId, groupId, above, below, contemporary, equal):
+    def _addUnit(self, project, unitClass, site, unitId, groupId, aboves, belows, contemporaries, equals):
         if unitId:
-            if unit == 'context':
-                unit = Unit(site, unitId, groupId, Unit.Assigned)
+            if unitClass == Unit.Context:
+                unit = self._unit(project, unitId, unitClass)
                 project.addUnit(unit)
-                project.matrix.addRelationships(unit.key(), Matrix.Above, below)
-                project.matrix.addRelationships(unit.key(), Matrix.Same, equal)
-                project.matrix.addRelationships(unit.key(), Matrix.Contemporary, contemporary)
+                for belowId in belows:
+                    below = self._unit(project, belowId, unitClass)
+                    project.addRelationship(unit, Matrix.Above, below)
+                for equalId in equals:
+                    equal = self._unit(project, equalId, unitClass)
+                    project.addRelationship(unit, Matrix.Same, equal)
+                for contemporaryId in contemporaries:
+                    contemporary = self._unit(project, contemporaryId, unitClass)
+                    project.addRelationship(unit, Matrix.Contemporary, contemporary)
                 if groupId:
                     project.addSubgrouping(groupId, unitId)
 

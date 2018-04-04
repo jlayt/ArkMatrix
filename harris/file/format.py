@@ -35,7 +35,7 @@ class Format():
     @staticmethod
     def createFormat(suffix):
         if (suffix == 'lst'):
-            return Lst(outfile)
+            return Lst()
         elif (suffix == 'csv'):
             return Csv()
         elif (suffix == 'graphml'):

@@ -94,13 +94,6 @@ class Csv(Formatter):
                 #print 'Error reading row: ' + str(record)
         return project
 
-    def _unit(self, project, unitId, unitClass):
-        if project.hasUnit(unitId, unitClass):
-            return project.unit(unitId, unitClass)
-        unit = Unit(project.siteCode(), unitId, unitClass)
-        project.addUnit(unit)
-        return unit
-
     def write(self, outfile, project, unitClass, options):
         self._file = outfile
         self._print(project.siteCode(), '', 'site')

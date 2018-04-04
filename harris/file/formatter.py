@@ -21,6 +21,8 @@
  ***************************************************************************/
 """
 
+from harris.unit import Unit
+
 
 class Formatter(object):
 
@@ -44,3 +46,10 @@ class Formatter(object):
     def _writeline(self, line):
         if self._file:
             self._file.write(str(line) + '\n')
+
+    def _unit(self, project, unitId, unitClass):
+        if project.hasUnit(unitId, unitClass):
+            return project.unit(unitId, unitClass)
+        unit = Unit(project.siteCode(), unitId, unitClass)
+        project.addUnit(unit)
+        return unit

@@ -120,6 +120,9 @@ class Project(object):
         if (fromUnit.unitClass() == toUnit.unitClass()):
             self._matrices[fromUnit.unitClass()].addRelationship(fromUnit, reln, toUnit)
 
+    def addRelationships(self, fromUnit, reln, toUnits):
+        self._matrices[fromUnit.unitClass()].addRelationship(fromUnit, reln, toUnits)
+
     def orphaned(self, unitClass):
         units = []
         for unit in self._units[unitClass].values():
