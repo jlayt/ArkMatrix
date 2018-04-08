@@ -2,21 +2,30 @@
 """
 /***************************************************************************
                                 ARK Matrix
-        Part of the Archaeological Recording Kit by L-P : Archaeology
+      Part of the Archaeological Recording Kit by L - P : Archaeology
                         http://ark.lparchaeology.com
                               -------------------
-        begin                : 2016-02-29
-        git sha              : $Format:%H$
-        copyright            : 2017 by John Layt
-        email                : john@layt.net
+                    Copyright : 2018 John Layt
+                    Copyright : 2018 L - P : Heritage LLP
  ***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
+ *   This file is part of ARK Matrix.                                      *
+ *                                                                         *
+ *   ARK Matrix is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU Lesser General Public License as        *
+ *   published by the Free Software Foundation, either version 3 of the    *
+ *   License, or (at your option) any later version.                       *
+ *                                                                         *
+ *   ARK is distributed in the hope that it will be useful,                *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          *
+ *   GNU Lesser General Public License for more details.                   *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with ARK Matrix. If not, see                            *
+ *   <http://www.gnu.org/licenses/>.                                       *
  *                                                                         *
  ***************************************************************************/
 """
