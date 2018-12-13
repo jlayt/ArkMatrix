@@ -135,6 +135,7 @@ class Matrix(object):
         """
         if not fromUnit.isValid() or not toUnits:
             return False
+        toUnits = list(toUnits)
         if reln == Matrix.Above:
             toUnits.insert(0, fromUnit)
             self._strat.add_star(toUnits)
@@ -337,7 +338,7 @@ class Matrix(object):
         # Transitive reduction algorithm found on StackOverflow, algorithm originally from GraphViz tred
         # http://stackoverflow.com/questions/17078696/im-trying-to-perform-the-transitive-reduction-of-directed-graph-in-python
         for root in self._strat.nodes():
-            for gen1 in self._strat.successors(root):
+            for gen1 in list(self._strat.successors(root)):
                 # Skip the direct children, look at every grandchild instead
                 for gen2 in self._strat.successors(gen1):
                     # For the grandchild and all its decendents, remove any direct links back to the original unit

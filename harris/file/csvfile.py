@@ -109,9 +109,9 @@ class Csv(Formatter):
         self._print(project.dataset(), '', 'dataset')
         for unit in project.units(unitClass):
             if unit.type() != Unit.Undefined:
-                self._print(unit.id(), Unit.Type(unit.type()), 'type')
+                self._print(unit.id(), Unit.Type[unit.type()], 'type')
             if unit.status() != Unit.Allocated:
-                self._print(unit.id(), Unit.Status(unit.status()), 'status')
+                self._print(unit.id(), Unit.Status[unit.status()], 'status')
             if unit.label() != unit.id():
                 self._print(unit.id(), unit.label(), 'label')
             for child in project.matrix(unit.type()).successors(unit):
