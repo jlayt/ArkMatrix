@@ -55,6 +55,7 @@ def getParser():
     parser.add_argument("--width", help="Width of graph node", type=float, default=50.0)
     parser.add_argument("--height", help="Height of graph node", type=float, default=25.0)
     parser.add_argument("--basename", help="Base filename for file output", default='')
+    parser.add_argument("--aggregate", help="Output aggregate grouping in graph file", action='store_true')
     parser.add_argument('infile', help="Source data file", nargs='?', type=argparse.FileType('r'), default=None)
     parser.add_argument('outfile', help="Destination csv file", nargs='?', type=argparse.FileType('w'), default=None)
     return parser
