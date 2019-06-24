@@ -43,24 +43,25 @@ class Gxl(Formatter):
         self._read = False
         self._write = True
 
-    def write(self, project, options):
-        print '<?xml version="1.0" encoding="UTF-8"?>'
-        print '<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">'
+    def write(self, outfile, project, unitClass, options):
+        self._file = outfile
 
-        print '<gxl xmlns:xlink=" http://www.w3.org/1999/xlink">'
+        self._writeline('<?xml version="1.0" encoding="UTF-8"?>')
+        self._writeline('<!DOCTYPE gxl SYSTEM "http://www.gupro.de/GXL/gxl-1.0.dtd">')
 
-        print '    <graph id="' + project.dataset() + '" edgeids="true" edgemode="directed">'
+        self._writeline('<gxl xmlns:xlink=" http://www.w3.org/1999/xlink">')
+        self._writeline('    <graph id="' + project.dataset() + '" edgeids="true" edgemode="directed">')
 
-        for unit in project.units():
-            print '        <node id=' + doublequote(unit.id()) + '/>'
+        for unit in project.units(unitClass):
+            self._writeline('        <node id=' + doublequote(unit.id()) + '/>')
 
         eid = 0
-        for edge in project.matrix(Unit.Context).relationships():
+        for edge in project.matrix(unitClass).relationships():
             frm = edge[0]
             to = edge[1]
-            print '        <edge id=' + doublequote(eid) + ' from="' + \
-                doublequote(edge[0].id()) + ' to=' + doublequote(edge[1].id()) + '/>'
+            self._writeline('        <edge id=' + doublequote(eid) + ' from="' + doublequote(edge[0].id())
+                             + ' to=' + doublequote(edge[1].id()) + '/>')
             eid += 1
 
-        print '    </graph>'
-        print '</gxl>'
+        self._writeline('    </graph>')
+        self._writeline('</gxl>')

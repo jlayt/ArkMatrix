@@ -43,22 +43,24 @@ class Gv(Formatter):
         self._read = False
         self._write = True
 
-    def write(self, project, options):
-        print 'digraph ' + project.dataset.replace(' ', '_') + ' {'
+    def write(self, outfile, project, unitClass, options):
+        self._file = outfile
+
+        self._writeline('digraph ' + project.dataset().replace(' ', '_') + ' {')
         if options['style']:
-            project.matrix.weightForDegree()
-            print '    splines=polyline'  # Should be ortho but ports support not implemented
-            print '    concentrate=true'
-            print '    ranksep="1.0 equally"'
-            print '    nodesep="2.0 equally"'
-            print '    node [shape=box]'
-            print '    edge [arrowhead=none headport=n tailport=s width=' + \
-                str(options['width']) + ' height=' + str(options['height']) + ']'
+            project.matrix(unitClass).weightForDegree()
+            self._writeline('    splines=polyline')  # Should be ortho but ports support not implemented
+            self._writeline('    concentrate=true')
+            self._writeline('    ranksep="1.0 equally"')
+            self._writeline('    nodesep="2.0 equally"')
+            self._writeline('    node [shape=box]')
+            self._writeline('    edge [arrowhead=none headport=n tailport=s width=' + str(options['width'])
+                             + ' height=' + str(options['height']) + ']')
 
-        for edge in project.matrix(Unit.Context).relationships(data='weight', default=1):
+        for edge in project.matrix(unitClass).relationships(data='weight', default=1):
             out = '    ' + doublequote(edge[0].id()) + ' -> ' + doublequote(edge[1].id())
-            if options['style']:
+            if options['style'] and len(edge) == 3:
                 out += ' [weight=' + str(edge[2]) + ']'
-            print out + ';'
+            self._writeline(out + ';')
 
-        print '}'
+        self._writeline('}')

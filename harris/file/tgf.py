@@ -41,10 +41,12 @@ class Tgf(Formatter):
         self._read = False
         self._write = True
 
-    def write(self, project, options):
-        for unit in project.units(Unit.Context):
-            print str(unit.key()) + ' ' + str(unit.id())
-        print '#'
-        for unit in project.units(Unit.Context):
-            for successor in project.matrix(Unit.Context).successors():
-                print str(unit.key()) + ' ' + str(successor.key())
+    def write(self, outfile, project, unitClass, options):
+        self._file = outfile
+
+        for unit in project.units(unitClass):
+            self._writeline(str(unit.key()) + ' ' + str(unit.id()))
+        self._writeline('#')
+        for unit in project.units(unitClass):
+            for successor in project.matrix(unitClass).successors(unit):
+                self._writeline(str(unit.key()) + ' ' + str(successor.key()))

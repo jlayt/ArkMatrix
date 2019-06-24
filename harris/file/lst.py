@@ -49,11 +49,12 @@ class Lst(Formatter):
 
     def read(self, infile, dataset='', siteCode=''):
         project = Project(dataset, siteCode)
-        line = infile.readline().strip()
-        project.dataset = line.strip()[len('Stratigraphic Dataset'):].strip()
         self._siteCode = project.siteCode()
-        if not project.dataset:
-            project.dataset = 'harris'
+        line = infile.readline().strip()
+        dataset = line.strip()[len('Stratigraphic Dataset'):].strip()
+        if dataset is None or dataset == '':
+            dataset = 'harris'
+        project.setDataset(dataset)
         line = infile.readline().strip()
         line = infile.readline().strip()
         site = ''
