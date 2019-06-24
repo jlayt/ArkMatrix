@@ -40,9 +40,29 @@ ArkMatrix is run from the command line.
 
 To generate a graphical version of smaller matrices, install yEd <https://www.yworks.com/products/yed>.
 
-*   Run 'python arkmatrix.py --graph gml mysite.csv mysite_reduced.csv'
+*   Create a GML output file by running 'python arkmatrix.py --graph gml mysite.csv mysite_reduced.csv'
 *   Open mysite.gml in yEd
-*   Choose Layout > Hierarchical, customise the settings for orthogonal grouped edges and click OK
+*   Choose Layout > Hierarchical and configure the following options:
+  *  General / Orientation = Top to Bottom
+  *  General / Symmetric Placement = Yes
+  *  General / Minimum Distances / Node to Node = 30
+  *  General / Minimum Distances / Node to Edge = 15
+  *  General / Minimum Distances / Edge to Edge = 15
+  *  General / Minimum Distances / Layer to Layer = 10
+  *  Edges / Routing Style = Orthogonal
+  *  Edges / Automatic Edge Grouping = Yes
+  *  Edges / Port Constraint Optimisation = Yes
+  *  Edges / Recursive Edge Routing = Directed
+  *  Edges / Consider Edge Thickness = Yes
+  *  Layers / Layer Assignment Policy = Hierarchical - Topmost
+  *  Layers / Alignment Within Layer = Center of Nodes
+  *  Layers / Component Arrangement = Topmost
+  *  Labelling / Consider Node Labels = Yes
+  *  Grid / Enable Grid = Yes
+  *  Grid / Grid Spacing = 10
+  *  Grid / Port Assignment = On Grid
+* Choose Apply, then adjust layout as required
+* Save resulting graph in GraphML format to preserve layout, or export as PDF
 
 ## CSV Format
 
@@ -64,4 +84,3 @@ The advanced format consists of 3 columns, with the third column describing the 
 *   type - context in column 1 has the class in column 2, either undefined, deposit, fill, cut, masonry, skeleton or timber
 
 See <https://gitlab.com/arklab/ArkMatrix/blob/master/test/csv_format.csv> for an example.
-
