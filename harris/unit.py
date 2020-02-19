@@ -63,7 +63,7 @@ class Unit(object):
 
     def __init__(self, siteCode, unitId, unitClass=Context, unitType=Undefined, unitStatus=Allocated):
         # Node ID, unique over all unit types
-        self._nid = Unit._counter.next()
+        self._nid = next(Unit._counter)
         self._siteCode = siteCode
         # ID, unique within unit type and site code
         self._id = str(unitId)
