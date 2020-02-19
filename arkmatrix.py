@@ -206,11 +206,11 @@ def writeMatrixInfo(info):
     missing = info['missing']['predecessors']
     out += '  Units With No Unit Above: ' + str(len(missing)) + '\n'
     if missing:
-        out += '      ' + str(map(str, sorted(missing))) + '\n'
+        out += '      ' + str(list(map(str, sorted(missing)))) + '\n'
     missing = info['missing']['successors']
     out += '  Units With No Unit Below: ' + str(len(missing)) + '\n'
     if missing:
-        out += '      ' + str(map(str, sorted(missing))) + '\n'
+        out += '      ' + str(list(map(str, sorted(missing)))) + '\n'
     out += '  Is Valid: ' + str(info['valid']) + '\n'
     out += '  Longest Path: ' + str(info['longest']) + '\n'
     sys.stdout.write(out)
