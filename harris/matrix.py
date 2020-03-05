@@ -138,7 +138,7 @@ class Matrix(object):
         toUnits = list(toUnits)
         if reln == Matrix.Above:
             toUnits.insert(0, fromUnit)
-            self._strat.add_star(toUnits)
+            nx.add_star(self._strat, toUnits)
         elif reln == Matrix.Below:
             for toUnit in toUnits:
                 self._strat.add_edge(toUnit, fromUnit)
@@ -149,7 +149,7 @@ class Matrix(object):
                 except nx.NetworkXError:
                     pass
             toUnits.insert(0, fromUnit)
-            self._same.add_star(toUnits)
+            nx.add_star(self._same, toUnits)
         elif reln == Matrix.Contemporary:
             for toUnit in toUnits:
                 try:
@@ -157,11 +157,11 @@ class Matrix(object):
                 except nx.NetworkXError:
                     pass
             toUnits.insert(0, fromUnit)
-            self._contemp.add_star(toUnits)
+            nx.add_star(self._contemp, toUnits)
 
     def addRelationshipChain(self, unitsChain):
         """Add a chain of Above/Below relationships in the order of the input list."""
-        self._strat.add_path(unitsChain)
+        nx.add_path(self._strat, unitsChain)
 
     def removeUnit(self, unit):
         if unit in self._strat:
