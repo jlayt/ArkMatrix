@@ -54,6 +54,7 @@ To generate a graphical version of smaller matrices, install yEd <https://www.yw
   * Edges / Port Constraint Optimisation = Yes
   * Edges / Recursive Edge Routing = Directed
   * Edges / Consider Edge Thickness = Yes
+  * Edges / Arrows Define Edge Direction = No
   * Layers / Layer Assignment Policy = Hierarchical - Topmost
   * Layers / Alignment Within Layer = Center of Nodes
   * Layers / Component Arrangement = Topmost
