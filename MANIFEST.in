@@ -1,0 +1,7 @@
+include LICENSE
+graft docs
+graft web/static
+graft web/templates
+graft tests/harris
+graft tests/web
+global-exclude *.pyc
