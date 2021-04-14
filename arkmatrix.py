@@ -139,14 +139,18 @@ def process(infile, outfile, options):
 
         for unitClass in range(Unit.Context, Unit.Landuse):
             sys.stdout.write('\nErrors in ' + Unit.Class[unitClass] + ' matrix' + '\n\n')
-            duplicates = project.matrix(unitClass).duplicates()
-            sys.stdout.write('  Cylic Same-As Relationships: ' + str(len(duplicates)) + '\n')
+            duplicates = list(project.matrix(unitClass).duplicates())
+            sys.stdout.write('  Cyclic Same-As Relationships: ' + str(len(duplicates)) + '\n')
             for edge in duplicates:
-                sys.stdout.write('    Same-As: ' + str(map(str, edge)) + '\n')
-            cycles = project.matrix(unitClass).cycles()
-            sys.stdout.write('\n  Cylic Above/Below Relationships: ' + '\n')  # + str(len(cycles))
+                sys.stdout.write('    Same-As: ' + str(list(map(str, edge))) + '\n')
+            cycles = list(project.matrix(unitClass).cycles())
+            sys.stdout.write('\n  Cyclic Above/Below Relationships: ' + str(len(cycles)) + '\n')
+            pairs = set()
             for cycle in cycles:
-                sys.stdout.write('    Cycle: ' + str(map(str, cycle)) + '\n')
+                pair = (cycle[0], cycle[-1])
+                pairs.add(pair)
+            for pair in pairs:
+                sys.stdout.write('    Cycle Pair: ' + str(list(map(str, pair))) + '\n')
         sys.stdout.write('\n')
 
     formatter.write(outfile, project, Unit.Context, options)
@@ -176,19 +180,19 @@ def writeProjectInfo(info):
     out += '    - Subgroups: ' + str(info['subgroups']) + '\n'
     out += '    - Groups: ' + str(info['groups']) + '\n'
     out += '    - Landuses: ' + str(info['landuses']) + '\n'
-    out += '  Number of Orphan Contexts: ' + str(len(info['orphans'])) + '\n'
+    out += '  Number of Orphan Contexts: ' + str(len(list(info['orphans']))) + '\n'
     if info['orphans']:
-        out += '    ' + str(map(str, info['orphans'])) + '\n'
+        out += '    ' + str(list(map(str, info['orphans']))) + '\n'
     if info['subgroups'] > 0:
         missing = missing = info['missing']['subgroup']
         out += '  Number of Contexts Missing Subgroup: ' + str(len(missing)) + '\n'
         if missing:
-            out += '    ' + str(map(str, missing)) + '\n'
+            out += '    ' + str(list(map(str, missing))) + '\n'
     if info['groups'] > 0:
         missing = info['missing']['group']
         out += '  Number of Subgroups Missing Group: ' + str(len(missing)) + '\n'
         if missing:
-            out += '    ' + str(map(str, missing)) + '\n'
+            out += '    ' + str(list(map(str, missing))) + '\n'
     out += '\n'
     sys.stdout.write(out)
     writeMatrixInfo(info['matrix']['context'])
