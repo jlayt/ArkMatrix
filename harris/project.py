@@ -153,8 +153,8 @@ class Project(object):
     def unaggregated(self, unitClass):
         units = []
         for unit in self._units[unitClass].values():
-            if unit.aggregate() is not None:
-                units.append(unit.aggregate())
+            if unit.aggregate() is None:
+                units.append(unit)
         return sorted(units)
 
     def makeKey(self, unitId):
