@@ -184,7 +184,7 @@ def writeProjectInfo(info):
     if info['orphans']:
         out += '    ' + str(list(map(str, info['orphans']))) + '\n'
     if info['subgroups'] > 0:
-        missing = missing = info['missing']['subgroup']
+        missing = info['missing']['subgroup']
         out += '  Number of Contexts Missing Subgroup: ' + str(len(missing)) + '\n'
         if missing:
             out += '    ' + str(list(map(str, missing))) + '\n'
@@ -196,10 +196,6 @@ def writeProjectInfo(info):
     out += '\n'
     sys.stdout.write(out)
     writeMatrixInfo(info['matrix']['context'])
-    if info['subgroups'] > 0:
-        writeMatrixInfo(info['matrix']['subgroup'])
-    if info['groups'] > 0:
-        writeMatrixInfo(info['matrix']['group'])
 
 
 def writeMatrixInfo(info):
